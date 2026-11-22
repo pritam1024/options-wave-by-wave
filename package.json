@@ -1,0 +1,10 @@
+{
+  "name": "options-wave-by-wave",
+  "version": "1.0.0",
+  "private": true,
+  "description": "An interactive NIFTY and Bank Nifty options course, published with GitHub Pages.",
+  "scripts": {
+    "test": "node tests/check.mjs",
+    "start": "python3 -m http.server 8000 --directory site"
+  }
+}

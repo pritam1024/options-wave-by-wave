@@ -1,0 +1,1578 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Options Wave by Wave</title>
+<meta name="description" content="An interactive NIFTY and Bank Nifty options course from basics to advanced: payoff and Greeks tools, a strategy lab, market-regime and Elliott Wave guides, quizzes and lessons from a 2008-2026 backtest.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a7570'/%3E%3Cpath d='M4 22 9 15 12 19 18 8 21 12 27 5' fill='none' stroke='%23fff' stroke-width='2.6' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0} img{max-width:100%} [hidden]{display:none!important}
+</style>
+<style>
+/* Layout: a field manual. A sticky module rail on the left, a ~68ch reading column, and live "desk" panels that widen to the full content width. */
+:root{
+  --bg:#f3f5f7; --surface:#ffffff; --surface-2:#eaeef2; --ink:#111a24; --ink-2:#3b4656; --muted:#5f6b7d; --line:#d7dde5;
+  --accent:#0a7570; --accent-strong:#075a56; --accent-soft:#dcefed; --on-accent:#ffffff;
+  --wave:#a86e00; --wave-soft:#f6ecd6;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --good:#0a8f0a; --bad:#d03b3b;
+  --good-soft:rgba(12,163,12,.14); --bad-soft:rgba(208,59,59,.13);
+  --grid:#e2e7ed; --axis:#bcc5d0; --band:rgba(42,120,214,.08);
+  --f-display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --f-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0d1218; --surface:#141b24; --surface-2:#1b2430; --ink:#e8edf3; --ink-2:#c0c9d5; --muted:#8f9aab; --line:#283342;
+  --accent:#38b2a8; --accent-strong:#62cbc2; --accent-soft:#12312f; --on-accent:#04201e;
+  --wave:#e3a82b; --wave-soft:#2c2412;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --good:#22b522; --bad:#e66767;
+  --good-soft:rgba(34,181,34,.17); --bad-soft:rgba(230,103,103,.17);
+  --grid:#222c39; --axis:#3a4657; --band:rgba(57,135,229,.12); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1218; --surface:#141b24; --surface-2:#1b2430; --ink:#e8edf3; --ink-2:#c0c9d5; --muted:#8f9aab; --line:#283342;
+  --accent:#38b2a8; --accent-strong:#62cbc2; --accent-soft:#12312f; --on-accent:#04201e;
+  --wave:#e3a82b; --wave-soft:#2c2412;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --good:#22b522; --bad:#e66767;
+  --good-soft:rgba(34,181,34,.17); --bad-soft:rgba(230,103,103,.17);
+  --grid:#222c39; --axis:#3a4657; --band:rgba(57,135,229,.12); color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{background:var(--bg);color:var(--ink);font:16px/1.65 var(--f-body);-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+a{color:var(--accent-strong)}
+h1,h2,h3,h4{font-family:var(--f-display);line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.3rem,5.4vw,3.7rem);font-weight:780;letter-spacing:-.02em}
+h2{font-size:clamp(1.6rem,3.2vw,2.1rem);font-weight:720;letter-spacing:-.01em}
+h3{font-size:1.22rem;font-weight:680;margin-top:2.2rem}
+h4{font-size:1rem;font-weight:650}
+p{margin:.7rem 0}
+.mono,code,.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+code{font-size:.88em;background:var(--surface-2);padding:.1em .35em;border-radius:4px}
+.shell{display:grid;grid-template-columns:270px minmax(0,1fr);min-height:100%;
+  padding-left:max(0px,env(safe-area-inset-left,0px));padding-right:max(0px,env(safe-area-inset-right,0px))}
+.rail{position:sticky;top:0;height:100vh;overflow:auto;background:var(--surface);border-right:1px solid var(--line);padding:22px 14px 28px;display:flex;flex-direction:column;gap:14px}
+.brand{display:flex;flex-direction:column;gap:2px;padding:0 8px}
+.brand b{font-family:var(--f-display);font-size:1.25rem;font-weight:760;letter-spacing:-.01em}
+.brand span{font-size:.78rem;color:var(--muted)}
+.prog{padding:0 8px}
+.prog .bar{height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden}
+.prog .bar i{display:block;height:100%;width:0;background:var(--accent);border-radius:3px;transition:width .4s}
+.prog small{display:block;margin-top:6px;color:var(--muted);font-size:.78rem}
+.nav{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.nav a{display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:6px;padding:7px 8px;border-radius:7px;color:var(--ink-2);text-decoration:none;font-size:.92rem;line-height:1.3}
+.nav a:hover{background:var(--surface-2)}
+.nav a[aria-current="page"]{background:var(--accent-soft);color:var(--ink)}
+.nav .n{font-family:var(--f-mono);font-size:.74rem;color:var(--muted)}
+.nav .ok{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--line)}
+.nav .ok.done{background:var(--accent);border-color:var(--accent);box-shadow:inset 0 0 0 3px var(--surface)}
+.nav .sep{height:1px;background:var(--line);margin:8px 8px}
+main{min-width:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 96px}
+.mobilebar{display:none;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);margin:0 calc(-1*max(16px,env(safe-area-inset-left,0px))) 0;padding:10px max(16px,env(safe-area-inset-left,0px));gap:10px;align-items:center}
+.mobilebar b{font-family:var(--f-display);font-size:1.02rem;white-space:nowrap}
+.mobilebar select{flex:1;min-width:0}
+@media (max-width:920px){.shell{grid-template-columns:1fr}.rail{display:none}.mobilebar{display:flex}}
+.col{max-width:740px;margin:0 auto}
+.wide{max-width:1060px;margin:0 auto}
+section[data-route]{padding-top:34px}
+.eyebrow{font-family:var(--f-mono);font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-strong)}
+.lede{font-size:1.12rem;color:var(--ink-2);max-width:62ch}
+.meta-row{display:flex;flex-wrap:wrap;gap:8px 16px;color:var(--muted);font-size:.85rem;margin-top:10px}
+.callout{background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:14px 16px;margin:18px 0}
+.callout > .lab{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;font-weight:500;margin-bottom:4px;display:block}
+.callout.analogy > .lab{color:var(--wave)}
+.callout.example > .lab{color:var(--s1)}
+.callout.data > .lab{color:var(--accent-strong)}
+.callout.warn > .lab{color:var(--bad)}
+.callout p:first-of-type{margin-top:0}.callout p:last-child{margin-bottom:0}
+.callout.data{background:var(--accent-soft);border-color:transparent}
+.callout.analogy{background:var(--wave-soft);border-color:transparent}
+ul.tight{margin:.5rem 0;padding-left:1.2rem}ul.tight li{margin:.25rem 0}
+table.t{width:100%;border-collapse:collapse;font-size:.92rem;margin:14px 0}
+table.t th,table.t td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+table.t th{font-weight:600;color:var(--ink-2);font-size:.84rem;background:var(--surface-2)}
+table.t td.num,table.t th.num{text-align:right}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.desk{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;margin:26px auto;max-width:1060px}
+.desk > header{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 16px;align-items:baseline;margin-bottom:12px}
+.desk > header h4{font-size:1.06rem}
+.desk > header small{color:var(--muted)}
+.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px 16px;margin-bottom:14px}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field label{font-size:.8rem;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.field label output{font-family:var(--f-mono);color:var(--ink);font-size:.82rem}
+input[type=range]{width:100%;accent-color:var(--accent)}
+input[type=number],input[type=text],select,textarea{font:inherit;font-size:.95rem;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:7px 9px;width:100%;min-width:0}
+textarea{resize:vertical}
+input:focus-visible,select:focus-visible,button:focus-visible,textarea:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;flex-wrap:wrap}
+.seg button{font:inherit;font-size:.86rem;border:0;background:var(--surface);color:var(--ink-2);padding:6px 12px;cursor:pointer}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+.btn{font:inherit;font-size:.9rem;font-weight:600;border:1px solid var(--accent);background:var(--accent);color:var(--on-accent);padding:8px 14px;border-radius:8px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--accent-strong)}
+.btn:disabled{opacity:.5;cursor:default}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:.82rem;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);padding:4px 10px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--ink)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px 0}
+.stat{background:var(--surface-2);border-radius:8px;padding:10px 12px;min-width:0}
+.stat span{display:block;font-size:.76rem;color:var(--muted)}
+.stat b{display:block;font-family:var(--f-mono);font-size:1.05rem;font-weight:500;overflow-wrap:anywhere}
+.stat b.pos{color:var(--good)}.stat b.neg{color:var(--bad)}
+.chart{position:relative;width:100%;min-width:0}
+.chart svg{display:block;overflow:visible}
+.chart .tick{font-family:var(--f-mono);font-size:11px;fill:var(--muted)}
+.chart .gridline{stroke:var(--grid);stroke-width:1}
+.chart .ax-zero{stroke:var(--axis);stroke-width:1.2}
+.chart .axis{stroke:var(--axis);stroke-width:1}
+.chart .cross{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 3}
+.chart .lbl{font-family:var(--f-body);font-size:11.5px;fill:var(--ink-2)}
+.chart .lbl.strong{fill:var(--ink);font-weight:600}
+.chart .l1{fill:none;stroke:var(--s1);stroke-width:2.2;stroke-linejoin:round}
+.chart .l2{fill:none;stroke:var(--s2);stroke-width:2.2;stroke-linejoin:round}
+.chart .l3{fill:none;stroke:var(--s3);stroke-width:2.2;stroke-linejoin:round}
+.chart .lt0{fill:none;stroke:var(--ink-2);stroke-width:1.6;stroke-dasharray:5 4}
+.chart .profit{fill:var(--good-soft)}.chart .loss{fill:var(--bad-soft)}
+.chart .band{fill:var(--band)}
+.chart .spot{stroke:var(--ink-2);stroke-width:1;stroke-dasharray:2 3}
+.chart .dot1{fill:var(--s1);stroke:var(--surface);stroke-width:2}
+.chart .dot2{fill:var(--s2);stroke:var(--surface);stroke-width:2}
+.chart .dotk{fill:var(--ink);stroke:var(--surface);stroke-width:2}
+.chart .bar1{fill:var(--s1)}
+.chart .wave{fill:none;stroke:var(--wave);stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
+.chart .wave-hit{fill:none;stroke:transparent;stroke-width:22;cursor:pointer}
+.chart .wave-on{fill:none;stroke:var(--accent);stroke-width:5;stroke-linejoin:round;stroke-linecap:round}
+.chart .wlab{font-family:var(--f-display);font-weight:700;font-size:15px;fill:var(--ink);cursor:pointer}
+.chart .wcirc{fill:var(--surface);stroke:var(--wave);stroke-width:1.5;cursor:pointer}
+.chart .wcirc.on{fill:var(--accent);stroke:var(--accent)}
+.chart .wlab.on{fill:var(--on-accent)}
+.chart .vix{fill:none;stroke:var(--s2);stroke-width:1.8;stroke-dasharray:1 0}
+.tip{position:absolute;z-index:3;pointer-events:none;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:.8rem;line-height:1.45;box-shadow:0 6px 18px rgba(0,0,0,.12);min-width:150px;max-width:260px}
+.tip b{font-family:var(--f-mono);font-weight:500}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.82rem;color:var(--ink-2);margin:6px 0 0}
+.legend i{display:inline-block;width:18px;height:3px;border-radius:2px;vertical-align:middle;margin-right:6px}
+.legend i.dash{background:repeating-linear-gradient(90deg,var(--ink-2) 0 5px,transparent 5px 9px)}
+.legend i.sw{width:12px;height:12px;border-radius:3px}
+.grid2{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:18px}
+@media (max-width:820px){.grid2{grid-template-columns:1fr}}
+.legs{width:100%;border-collapse:collapse;font-size:.88rem}
+.legs th{font-size:.76rem;color:var(--muted);font-weight:500;text-align:left;padding:4px 6px}
+.legs td{padding:5px 6px;border-top:1px solid var(--line);white-space:nowrap}
+.legs .side{font-family:var(--f-mono);font-size:.8rem;padding:2px 7px;border-radius:5px;border:0;cursor:pointer}
+.legs .side.buy{background:var(--good-soft);color:var(--good)}
+.legs .side.sell{background:var(--bad-soft);color:var(--bad)}
+.legs .step{font:inherit;width:26px;height:26px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:6px;cursor:pointer;line-height:1}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+.scard{text-align:left;font:inherit;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px;cursor:pointer;color:var(--ink);display:flex;flex-direction:column;gap:4px}
+.scard:hover{border-color:var(--accent)}
+.scard[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.scard b{font-family:var(--f-display);font-size:1rem}
+.scard small{color:var(--muted);font-size:.8rem}
+.fam{font-family:var(--f-mono);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--accent-strong)}
+.sinfo dl{display:grid;grid-template-columns:120px minmax(0,1fr);gap:6px 12px;margin:10px 0;font-size:.9rem}
+.sinfo dt{color:var(--muted);font-size:.8rem}
+.sinfo dd{margin:0}
+@media (max-width:520px){.sinfo dl{grid-template-columns:1fr}.sinfo dt{margin-top:6px}}
+.matrix{display:grid;grid-template-columns:110px repeat(3,minmax(0,1fr));gap:6px;font-size:.86rem}
+.matrix .h{font-weight:600;color:var(--ink-2);padding:6px;font-size:.8rem}
+.mcell{font:inherit;text-align:left;background:var(--surface-2);border:1px solid transparent;border-radius:8px;padding:9px;cursor:pointer;color:var(--ink);min-width:0}
+.mcell:hover{border-color:var(--accent)}
+.mcell[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.mcell b{display:block;font-size:.84rem}
+.mcell span{display:block;color:var(--muted);font-size:.76rem;margin-top:3px}
+@media (max-width:640px){.matrix{grid-template-columns:76px repeat(3,minmax(0,1fr));font-size:.78rem}.mcell span{display:none}}
+.quiz{margin:34px 0 10px;border-top:1px solid var(--line);padding-top:22px}
+.q{margin:16px 0 22px}
+.q p.qt{font-weight:600;margin-bottom:8px}
+.opts{display:flex;flex-direction:column;gap:6px}
+.opt{font:inherit;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:9px 12px;cursor:pointer;color:var(--ink)}
+.opt:hover{border-color:var(--accent)}
+.opt.right{border-color:var(--good);background:var(--good-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.why{font-size:.9rem;color:var(--ink-2);margin-top:8px}
+.qstatus{font-size:.9rem;color:var(--muted)}
+.next{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;margin-top:28px}
+.hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:28px;align-items:center;padding-top:22px}
+@media (max-width:820px){.hero{grid-template-columns:1fr}}
+.map{list-style:none;padding:0;margin:18px 0;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.map a{display:block;text-decoration:none;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;height:100%}
+.map a:hover{border-color:var(--accent)}
+.map .n{font-family:var(--f-mono);font-size:.74rem;color:var(--muted)}
+.map b{display:block;font-family:var(--f-display);font-size:1.02rem;margin:2px 0}
+.map small{color:var(--ink-2);font-size:.84rem}
+.facts{counter-reset:f;list-style:none;padding:0;margin:12px 0}
+.facts li{padding:10px 0;border-bottom:1px solid var(--line)}
+.wavecard{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:10px}
+.wavecard > div{background:var(--surface-2);border-radius:8px;padding:12px;min-width:0}
+.wavecard h5{margin:0 0 4px;font-size:.78rem;font-family:var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.gloss-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;margin-top:14px}
+.term{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;min-width:0}
+.term b{font-family:var(--f-display);font-size:1rem}
+.term .cat{font-family:var(--f-mono);font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;color:var(--accent-strong);margin-left:6px}
+.term p{margin:.35rem 0 0;font-size:.9rem;color:var(--ink-2)}
+.term p.an{color:var(--wave);font-size:.86rem}
+.chat{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.msg{padding:10px 14px;border-radius:10px;max-width:92%;white-space:pre-wrap;overflow-wrap:anywhere}
+.msg.me{align-self:flex-end;background:var(--accent-soft)}
+.msg.bot{align-self:flex-start;background:var(--surface-2);white-space:normal}
+.msg.bot ul{margin:.3rem 0;padding-left:1.2rem}
+.msg.bot p{margin:.4rem 0}
+.composer{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;margin-top:12px;align-items:end}
+.small{font-size:.85rem;color:var(--muted)}
+.pill{display:inline-block;font-family:var(--f-mono);font-size:.72rem;padding:2px 8px;border-radius:999px;background:var(--surface-2);color:var(--ink-2)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+.pill.wv{background:var(--wave-soft);color:var(--wave)}
+details summary{cursor:pointer;color:var(--accent-strong);font-size:.9rem}
+.kbd{font-family:var(--f-mono);font-size:.8rem}
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="rail" aria-label="Course modules">
+    <div class="brand"><b>Options Wave by Wave</b><span>NIFTY &amp; Bank Nifty options, basics to advanced</span></div>
+    <div class="prog"><div class="bar"><i id="progbar"></i></div><small id="progtxt">0 of 10 modules done</small></div>
+    <ul class="nav" id="nav"></ul>
+  </aside>
+  <main id="main">
+    <div class="mobilebar"><b>Wave by Wave</b><select id="navsel" aria-label="Go to module"></select></div>
+
+    <!-- START -->
+    <section data-route="start">
+      <div class="wide hero">
+        <div>
+          <div class="eyebrow">A course built from 19 years of NSE option data</div>
+          <h1>Options, wave by wave</h1>
+          <p class="lede">An option is a price on how far NIFTY might move before a date. This course teaches you to read that price, pick the structure that fits the market in front of you, and size it so one bad week cannot sink you. Elliott Wave runs through it as a map of where your view is wrong.</p>
+          <div class="meta-row"><span>10 modules plus glossary and tutor</span><span>About 4 hours</span><span>Progress is saved in this browser</span></div>
+          <p style="margin-top:18px"><a class="btn" href="#basics" style="text-decoration:none">Start module 1</a></p>
+        </div>
+        <div class="chart" id="heroWave" aria-label="An Elliott Wave cycle: five waves up, three waves down"></div>
+      </div>
+      <div class="wide">
+        <h3>The course map</h3>
+        <ul class="map" id="map"></ul>
+        <h3>Four things our backtest of NIFTY options (2008–2026) found</h3>
+        <ol class="facts col" style="margin-left:0">
+          <li><b>Options are usually priced a little rich.</b> At-the-money implied volatility beat the volatility that followed by 2.15 points on average, 73% of the time.</li>
+          <li><b>Yet selling options and waiting lost money.</b> NIFTY's real move to expiry was 98% of the move options priced, so trends ate the premium of unhedged sellers.</li>
+          <li><b>Hedging direction turned the same trade into the most reliable edge we found.</b> A delta-hedged 16-delta strangle earned a Sharpe ratio near 1.0 in both halves of the sample.</li>
+          <li><b>No option-buying rule held up on years it had not seen.</b> That includes buying calls after a 5% dip, which looked excellent on 2020–26 alone.</li>
+        </ol>
+        <p class="small col" style="margin-left:0">This course teaches concepts and shows research results. It is not personal investment advice.</p>
+      </div>
+    </section>
+
+    <!-- 1 BASICS -->
+    <section data-route="basics" hidden>
+      <div class="col">
+        <div class="eyebrow">Module 1 · Foundations</div>
+        <h2>What an option actually is</h2>
+        <p class="lede">A contract that gives one side a right and the other side an obligation, for a price paid today.</p>
+        <h3>Calls and puts</h3>
+        <p>A <b>call</b> gives its buyer the right, not the obligation, to buy the underlying at a fixed price (the <b>strike</b>) on the expiry date. A <b>put</b> gives the right to sell at the strike. The buyer pays a <b>premium</b> for that right. The seller (also called the <b>writer</b>) receives the premium and takes on the obligation.</p>
+        <div class="callout analogy"><span class="lab">Analogy</span><p>A call is the token amount you pay to lock a flat at ₹80 lakh for 30 days. If prices jump to ₹90 lakh you use the right and gain ₹10 lakh minus the token. If prices fall you walk away and lose only the token.</p><p>A put is car insurance. You pay a small premium every year. If the car is wrecked (the market crashes), the insurer pays you the difference.</p></div>
+        <h3>The parts of a contract</h3>
+        <ul class="tight">
+          <li><b>Underlying:</b> the index the option is on. Here that is NIFTY 50 or Bank Nifty.</li>
+          <li><b>Strike:</b> the fixed price in the contract. NIFTY strikes come every 50 points, Bank Nifty every 100.</li>
+          <li><b>Expiry:</b> the last day. NIFTY has weekly and monthly expiries on Tuesdays; Bank Nifty has only monthly expiries (last Tuesday).</li>
+          <li><b>Premium:</b> the option's price, quoted in index points. You pay or receive premium × lot size in rupees.</li>
+          <li><b>Lot size:</b> how many units one contract covers. NIFTY is 65 and Bank Nifty is 30 from the January 2026 series. NSE revises these about twice a year.</li>
+        </ul>
+        <div class="callout example"><span class="lab">Real NIFTY example</span><p>NIFTY closed at 25,800 on 20 Nov 2026. Suppose you buy one lot of the 26,000 call expiring next Tuesday at ₹120 (an illustrative price). You pay 120 × 65 = ₹7,800.</p><p>If NIFTY settles at 26,400, the call is worth 400 points, which is ₹26,000, so you make ₹18,200. If NIFTY settles at or below 26,000, the call expires worthless and you lose ₹7,800. Your breakeven is 26,000 + 120 = 26,120.</p></div>
+        <h3>The four basic positions</h3>
+        <div class="scroll"><table class="t">
+          <tr><th>Position</th><th>View</th><th>Best case</th><th>Worst case</th></tr>
+          <tr><td>Buy a call</td><td>Up, soon</td><td>Unlimited</td><td>Lose the premium</td></tr>
+          <tr><td>Sell a call</td><td>Not up</td><td>Keep the premium</td><td>Unlimited</td></tr>
+          <tr><td>Buy a put</td><td>Down, soon</td><td>Large (to zero)</td><td>Lose the premium</td></tr>
+          <tr><td>Sell a put</td><td>Not down</td><td>Keep the premium</td><td>Large (to zero)</td></tr>
+        </table></div>
+        <h3>Moneyness: in, at and out of the money</h3>
+        <p>With NIFTY at 25,800, a 25,600 call is <b>in the money</b> (ITM): it already has 200 points of <b>intrinsic value</b>. The 25,800 call is <b>at the money</b> (ATM). A 26,200 call is <b>out of the money</b> (OTM): all of its premium is <b>time value</b>, the price of the chance that NIFTY gets there in time. For puts it is the reverse: the 26,000 put is in the money.</p>
+        <h3>How Indian index options work</h3>
+        <ul class="tight">
+          <li><b>European style:</b> they can only be exercised at expiry. Before that you trade the contract in the market.</li>
+          <li><b>Cash settled:</b> nobody delivers the index. At expiry, in-the-money options pay the difference between the settlement price and the strike.</li>
+          <li><b>Settlement price:</b> from 7 Dec 2026, expiring index contracts stop trading at 15:30 and settle on the average of the index constituents from 15:00 to 15:30 (per NSE circulars reported in November 2026).</li>
+          <li><b>Money flow:</b> buyers pay the full premium upfront. Sellers post margin with their broker, roughly ₹1.8–2 lakh per naked NIFTY lot.</li>
+        </ul>
+      </div>
+      <div class="desk" id="w-expiry"><header><h4>Expiry P&amp;L calculator</h4><small>Pick one option and move NIFTY at expiry</small></header>
+        <div class="controls">
+          <div class="field"><label>Side</label><div class="seg" id="ex-side"><button aria-pressed="true" data-v="1">Buy</button><button aria-pressed="false" data-v="-1">Sell</button></div></div>
+          <div class="field"><label>Type</label><div class="seg" id="ex-type"><button aria-pressed="true" data-v="C">Call</button><button aria-pressed="false" data-v="P">Put</button></div></div>
+          <div class="field"><label for="ex-k">Strike</label><input id="ex-k" type="number" step="50" value="26000"></div>
+          <div class="field"><label for="ex-p">Premium (points)</label><input id="ex-p" type="number" step="5" value="120"></div>
+          <div class="field"><label for="ex-s">NIFTY at expiry <output id="ex-so"></output></label><input id="ex-s" type="range" min="24500" max="27500" step="10" value="26400"></div>
+        </div>
+        <div class="stats" id="ex-stats"></div>
+        <div class="chart" id="ex-chart"></div>
+        <div class="legend"><span><i style="background:var(--s1)"></i>P&amp;L at expiry, one lot of 65</span><span><i class="sw" style="background:var(--good-soft)"></i>Profit</span><span><i class="sw" style="background:var(--bad-soft)"></i>Loss</span></div>
+      </div>
+      <div class="col"><div class="quiz" data-module="basics"></div><div class="next" data-next="pricing"></div></div>
+    </section>
+
+    <!-- 2 PRICING -->
+    <section data-route="pricing" hidden>
+      <div class="col">
+        <div class="eyebrow">Module 2 · Pricing</div>
+        <h2>What sets the premium</h2>
+        <p class="lede">Premium = intrinsic value + time value. Intrinsic value is simple arithmetic. Time value is where the five inputs and the market's expectations live.</p>
+        <div class="callout analogy"><span class="lab">Analogy</span><p>An option premium is an insurance quote. It depends on how close the risk is (strike versus spot), how long the cover lasts (time to expiry), how stormy the weather looks (volatility), and a little on interest rates.</p></div>
+        <h3>The five inputs</h3>
+        <div class="scroll"><table class="t">
+          <tr><th>If this goes up…</th><th>Call premium</th><th>Put premium</th><th>Why</th></tr>
+          <tr><td>NIFTY (spot)</td><td>Up</td><td>Down</td><td>Calls gain intrinsic value, puts lose it</td></tr>
+          <tr><td>Strike</td><td>Down</td><td>Up</td><td>A higher strike is harder for a call to reach</td></tr>
+          <tr><td>Days to expiry</td><td>Up</td><td>Up</td><td>More time, more chances to move</td></tr>
+          <tr><td>Implied volatility</td><td>Up</td><td>Up</td><td>Bigger expected swings make both rights worth more</td></tr>
+          <tr><td>Interest rate</td><td>Slightly up</td><td>Slightly down</td><td>Futures trade above spot by the cost of carry</td></tr>
+        </table></div>
+        <h3>Time decay is not a straight line</h3>
+        <p>Time value shrinks roughly with the square root of the time left. An at-the-money option with 30 days left loses only a little each day. In the final week the melt speeds up sharply, and on expiry day whatever time value is left disappears.</p>
+        <div class="callout data"><span class="lab">From the research</span><p>Since NIFTY's weekly expiry moved to Tuesday, the stretch from Friday's close to Monday's close removes about 28.5% of a weekly at-the-money straddle's value. Weekend days still count as time.</p></div>
+        <h3>Put-call parity and futures</h3>
+        <p>For the same strike and expiry, call minus put equals the discounted gap between the futures price and the strike: <span class="mono">C − P = (F − K) × discount</span>. That is why a long call plus a short put behaves like a long future (a <b>synthetic long</b>), and why traders back out the market's forward price from option prices. NIFTY futures normally trade above spot by the cost of carry, about the interest rate minus the dividend yield.</p>
+        <h3>The model in one paragraph</h3>
+        <p>Black-Scholes (and Black-76, its version on futures) prices an option from the five inputs, assuming prices move in a random walk with constant volatility. Every input is observable except volatility. So traders flip the model around: given the market price, they solve for the volatility that makes the model match. That number is the <b>implied volatility</b> (IV), and it is how options are really quoted and compared.</p>
+      </div>
+      <div class="desk"><header><h4>Premium explorer</h4><small>Move the inputs; watch intrinsic and time value</small></header>
+        <div class="controls">
+          <div class="field"><label for="pe-s">NIFTY spot <output id="pe-so"></output></label><input id="pe-s" type="range" min="23000" max="28600" step="50" value="25800"></div>
+          <div class="field"><label for="pe-k">Strike <output id="pe-ko"></output></label><input id="pe-k" type="range" min="23000" max="28600" step="50" value="26000"></div>
+          <div class="field"><label for="pe-d">Days to expiry <output id="pe-do"></output></label><input id="pe-d" type="range" min="0" max="60" step="1" value="30"></div>
+          <div class="field"><label for="pe-v">Implied volatility <output id="pe-vo"></output></label><input id="pe-v" type="range" min="8" max="45" step="0.5" value="14"></div>
+        </div>
+        <div class="stats" id="pe-stats"></div>
+        <div class="chart" id="pe-chart"></div>
+        <div class="legend"><span><i style="background:var(--s1)"></i>Call at your strike</span><span><i style="background:var(--s2)"></i>Put at your strike</span><span>Hover to read the value at any day</span></div>
+      </div>
+      <div class="col"><div class="quiz" data-module="pricing"></div><div class="next" data-next="greeks"></div></div>
+    </section>
+
+    <!-- 3 GREEKS -->
+    <section data-route="greeks" hidden>
+      <div class="col">
+        <div class="eyebrow">Module 3 · The Greeks</div>
+        <h2>How a premium reacts</h2>
+        <p class="lede">The Greeks measure how the premium changes when one input moves and the rest stay still. They are your dashboard.</p>
+        <h3>Delta: the speedometer</h3>
+        <p>Delta is how many points the option moves for a one-point move in NIFTY. An at-the-money call has a delta near 0.50: NIFTY up 100 points, call up about 50. Puts have negative delta. Delta also works as a rough probability that the option finishes in the money, and as a <b>hedge ratio</b>: a 0.16-delta option behaves like 0.16 of the index.</p>
+        <p>In rupees, one NIFTY lot with delta 0.30 gains about 0.30 × 65 = ₹19.5 per NIFTY point. Traders call a 16-delta strike "one standard deviation away", because it sits about one expected move from spot.</p>
+        <h3>Gamma: the acceleration</h3>
+        <p>Gamma is how fast delta changes. It peaks for at-the-money options close to expiry. A buyer is <b>long gamma</b>: profits accelerate in a big move either way. A seller is <b>short gamma</b>: losses accelerate when NIFTY runs.</p>
+        <h3>Theta: the melting ice cube</h3>
+        <p>Theta is the premium lost per day if nothing else changes. Buyers pay this rent to sellers every day. It is quoted per day in points, or in rupees per lot.</p>
+        <h3>Vega: the storm forecast</h3>
+        <p>Vega is the change in premium for a one-point change in implied volatility. When the market expects a storm, all options get dearer. After a scheduled event passes, implied volatility often collapses (<b>IV crush</b>) and option buyers can lose even when they guessed the direction right.</p>
+        <div class="callout data"><span class="lab">From the research</span><p>India VIX fell on all 14 measured Union Budget days: the uncertainty was priced in beforehand and released on the day.</p></div>
+        <h3>The trade-off nobody escapes</h3>
+        <p>For options of the same expiry, you cannot have positive theta and positive gamma at once. Earning time decay means being short gamma, so you lose on large moves. Owning gamma means paying theta every quiet day. Every strategy in this course is a choice of where to sit on that line.</p>
+        <h3>Delta hedging: neutralising direction</h3>
+        <p>Delta hedging means offsetting a position's delta with futures, so a small NIFTY move leaves you roughly flat. One NIFTY futures lot has a delta of 1.0 per option lot. If your short strangle on 10 lots has delta −0.4 per lot, the book is −4, so you buy 4 futures lots.</p>
+        <div class="callout example"><span class="lab">Real NIFTY example</span><p>On 26 Oct 2026, with NIFTY at 22,753, our model sold the 23,850 call and 21,750 put of the 23 Nov expiry. NIFTY then rallied 13% to 25,800 by 20 Nov.</p><p>The short call alone was down about 1,735 points per lot, over ₹1.1 lakh. With daily futures hedging, the whole position was down only 124 points per lot, 7.3% of its margin. The hedge had grown to one long futures lot per strangle lot as the call's delta reached 1.</p></div>
+      </div>
+      <div class="desk"><header><h4>Greeks explorer</h4><small>Per one lot of 65; theta per day, vega per one IV point</small></header>
+        <div class="controls">
+          <div class="field"><label>Type</label><div class="seg" id="gk-type"><button aria-pressed="true" data-v="C">Call</button><button aria-pressed="false" data-v="P">Put</button></div></div>
+          <div class="field"><label for="gk-s">NIFTY spot <output id="gk-so"></output></label><input id="gk-s" type="range" min="23500" max="28100" step="25" value="25800"></div>
+          <div class="field"><label for="gk-k">Strike <output id="gk-ko"></output></label><input id="gk-k" type="range" min="23500" max="28100" step="50" value="25800"></div>
+          <div class="field"><label for="gk-d">Days to expiry <output id="gk-do"></output></label><input id="gk-d" type="range" min="1" max="60" step="1" value="30"></div>
+          <div class="field"><label for="gk-v">Implied volatility <output id="gk-vo"></output></label><input id="gk-v" type="range" min="8" max="45" step="0.5" value="14"></div>
+        </div>
+        <div class="stats" id="gk-stats"></div>
+        <div class="chart" id="gk-chart"></div>
+        <div class="legend"><span><i style="background:var(--s1)"></i>Delta with 30 days left</span><span><i style="background:var(--s2)"></i>7 days left</span><span><i style="background:var(--s3)"></i>1 day left</span><span>Delta steepens near expiry: that steepness is gamma</span></div>
+      </div>
+      <div class="col"><div class="quiz" data-module="greeks"></div><div class="next" data-next="volatility"></div></div>
+    </section>
+
+    <!-- 4 VOLATILITY -->
+    <section data-route="volatility" hidden>
+      <div class="col">
+        <div class="eyebrow">Module 4 · Volatility</div>
+        <h2>Volatility is the real product</h2>
+        <p class="lede">Option traders buy and sell expected movement. Learn to compare what options price with what NIFTY actually does.</p>
+        <h3>Realised versus implied</h3>
+        <p><b>Realised volatility</b> (also called historical volatility) measures how much NIFTY actually moved, usually the standard deviation of daily returns over 20 days, annualised. <b>Implied volatility</b> is what option prices say NIFTY will do. <b>India VIX</b> is NSE's 30-day implied volatility for NIFTY, built from the option order book.</p>
+        <h3>Turning volatility into points</h3>
+        <ul class="tight">
+          <li>One day: IV ÷ √252. A VIX of 16 means about a 1% typical daily move (about 260 NIFTY points at 25,800).</li>
+          <li>To expiry: spot × IV × √(days ÷ 365). That is the one-standard-deviation move; NIFTY stays inside it about 68% of the time if the model holds.</li>
+          <li>An at-the-money straddle costs about 0.8 × that move. That is the market's price for the average absolute move.</li>
+        </ul>
+      </div>
+      <div class="desk"><header><h4>Expected move calculator</h4><small>What the option market is pricing</small></header>
+        <div class="controls">
+          <div class="field"><label for="em-s">NIFTY spot</label><input id="em-s" type="number" step="50" value="25800"></div>
+          <div class="field"><label for="em-v">Implied volatility or India VIX (%)</label><input id="em-v" type="number" step="0.5" value="14"></div>
+          <div class="field"><label for="em-d">Calendar days to expiry</label><input id="em-d" type="number" step="1" value="30"></div>
+        </div>
+        <div class="stats" id="em-stats"></div>
+      </div>
+      <div class="col">
+        <h3>The volatility risk premium</h3>
+        <p>Insurers charge more than the claims they expect to pay, because the rare bad year can be enormous. Option sellers do the same. The gap between implied and later realised volatility is the <b>volatility risk premium</b>. It is the only reliable edge we found in Indian index options.</p>
+      </div>
+      <div class="desk"><header><h4>NIFTY implied vs realised volatility, 2008–2026</h4><small>Our NSE data: at-the-money monthly IV at entry vs realised volatility until expiry, yearly averages</small></header>
+        <div class="chart" id="vr-chart"></div>
+        <div class="legend"><span><i style="background:var(--s1)"></i>Implied (at entry)</span><span><i style="background:var(--s2)"></i>Realised (to expiry)</span></div>
+        <details style="margin-top:10px"><summary>Show the numbers</summary><div class="scroll" id="vr-table"></div></details>
+      </div>
+      <div class="desk"><header><h4>The premium grows when options are expensive</h4><small>Implied minus realised volatility, by fifth of implied volatility level (630 samples, 2008–2026)</small></header>
+        <div class="chart" id="vq-chart"></div>
+        <p class="small">Realised move to expiry divided by the move options priced: 1.13 in the cheapest fifth (moves beat the price), 0.92 in the dearest fifth. Selling when options are cheap is the losing side.</p>
+      </div>
+      <div class="col">
+        <h3>Skew: why puts cost more</h3>
+        <p>NIFTY options do not share one implied volatility. Out-of-the-money puts trade at higher IV than at-the-money options, because investors pay up for crash insurance. One-month puts 5% below spot have run about 2.9 IV points above at-the-money, steady since 2008, while calls 5% above run about 1.7 points below.</p>
+        <div class="callout data"><span class="lab">From the research</span><p>Buyers of NIFTY puts 10% out of the money lost 52% of their premium on average. Buyers of calls 5% out of the money made 44% on average. Near-money calls have been cheap and far puts rich.</p></div>
+        <h3>Term structure</h3>
+        <p>Normally longer-dated options carry slightly higher IV than near-dated ones (<b>contango</b>). In a panic, near-term IV jumps above longer-term IV (<b>backwardation</b>). Backwardation is a stress signal: that is when the near-term premium is richest and most dangerous.</p>
+        <h3>Events</h3>
+        <p>Options price scheduled events (elections, Budget, RBI policy, US Fed decisions) ahead of time. On 4 Jun 2024, the election-result day straddle priced about a 2.9% move and NIFTY fell about 6%. The 2014 and 2019 results were over-priced. One bad mispricing can wipe out many months of selling.</p>
+      </div>
+      <div class="col"><div class="quiz" data-module="volatility"></div><div class="next" data-next="edge"></div></div>
+    </section>
+
+    <!-- 5 EDGE -->
+    <section data-route="edge" hidden>
+      <div class="col">
+        <div class="eyebrow">Module 5 · Who wins</div>
+        <h2>Buyers, sellers and the maths of winning</h2>
+        <p class="lede">A high win rate and a profitable strategy are different things. Expectancy decides, and costs and tails decide expectancy.</p>
+        <h3>What SEBI found</h3>
+        <p>In FY26, 87.7% of individual F&amp;O traders lost money (SEBI's profitability study, August 2026). In SEBI's sample, traders who only bought options made up 93% of the group and 89.9% of them lost. "Majorly option sellers" lost only 43.8% of the time, but their average result was a loss of ₹51.7 lakh, because the losers lost enormous sums. Prop desks and algorithmic firms took nearly all the profits.</p>
+        <div class="callout analogy"><span class="lab">Analogy</span><p>The option buyer is the lottery player: usually loses a little, occasionally wins big, and loses over time because the ticket is overpriced. The naive seller is an insurer in an earthquake zone with no reinsurance: collects steady premiums for years, then one quake takes everything.</p></div>
+        <h3>Expectancy</h3>
+        <p>Expectancy per trade = win rate × average win − loss rate × average loss. A strategy that wins 97% of the time can still be fragile, and one that wins 43% can be close to break-even. Try our real backtest numbers below.</p>
+      </div>
+      <div class="desk"><header><h4>Win rate vs payoff</h4><small>Presets are real NIFTY backtest results, 2008–2026</small></header>
+        <div class="chips" id="xp-presets" style="margin-bottom:12px"></div>
+        <div class="controls">
+          <div class="field"><label for="xp-w">Win rate (%)</label><input id="xp-w" type="number" step="0.1" value="43.1"></div>
+          <div class="field"><label for="xp-aw">Average win (%)</label><input id="xp-aw" type="number" step="0.1" value="71.3"></div>
+          <div class="field"><label for="xp-al">Average loss (%)</label><input id="xp-al" type="number" step="0.1" value="55.3"></div>
+        </div>
+        <div class="stats" id="xp-stats"></div>
+        <p class="small" id="xp-note"></p>
+      </div>
+      <div class="col">
+        <h3>Costs in India, late 2026</h3>
+        <ul class="tight">
+          <li><b>STT:</b> 0.15% of option premium sold, and 0.15% of intrinsic value on long options exercised at expiry. 0.05% of futures value sold (raised on 1 Apr 2026).</li>
+          <li><b>NSE charges:</b> 0.03553% of option premium; 0.00183% of futures value. SEBI fee ₹10 per crore. Stamp duty 0.003% on buys. GST 18% on brokerage and charges.</li>
+          <li><b>Brokerage:</b> about ₹20 per executed order at discount brokers.</li>
+          <li><b>Bid-ask spread:</b> the cost you never see on a contract note. It is small for near-money NIFTY strikes and large for far, cheap options.</li>
+        </ul>
+      </div>
+      <div class="desk"><header><h4>Trade cost calculator</h4><small>Selling and buying back one option position</small></header>
+        <div class="controls">
+          <div class="field"><label for="cc-sell">Sold at (points)</label><input id="cc-sell" type="number" step="0.5" value="100"></div>
+          <div class="field"><label for="cc-buy">Bought back at (points)</label><input id="cc-buy" type="number" step="0.5" value="50"></div>
+          <div class="field"><label for="cc-lots">Lots (NIFTY, 65 each)</label><input id="cc-lots" type="number" step="1" min="1" value="1"></div>
+          <div class="field"><label for="cc-br">Brokerage per order (₹)</label><input id="cc-br" type="number" step="1" value="20"></div>
+        </div>
+        <div class="stats" id="cc-stats"></div>
+      </div>
+      <div class="col">
+        <h3>Why naive sellers blow up</h3>
+        <p>Every famous option-selling blow-up was leverage meeting a gap: Niederhoffer in 1997, LJM losing about 80% in two days and XIV losing 96% in February 2018, and Allianz Structured Alpha funds losing over 90% in March 2020. In our own data, an unhedged NIFTY 16-delta strangle won 78% of its trades, but its worst trade (COVID, 2020) lost 312% of the margin it used.</p>
+      </div>
+      <div class="col"><div class="quiz" data-module="edge"></div><div class="next" data-next="strategies"></div></div>
+    </section>
+
+    <!-- 6 STRATEGIES -->
+    <section data-route="strategies" hidden>
+      <div class="col">
+        <div class="eyebrow">Module 6 · Strategy lab</div>
+        <h2>Every structure, priced and drawn</h2>
+        <p class="lede">A strategy is a set of legs. Pick one below to see its payoff at expiry and today, its risk in rupees, its Greeks, and when it fits.</p>
+        <h3>Reading a payoff diagram</h3>
+        <ul class="tight">
+          <li>The x-axis is where NIFTY ends up; the y-axis is your profit or loss in rupees for one set of lots.</li>
+          <li>The solid line is the result at expiry. The dashed line is the value today, before time decay has done its work.</li>
+          <li><b>Debit</b> strategies cost money upfront; <b>credit</b> strategies pay you upfront. <b>Defined risk</b> means a long option caps the worst case. <b>Undefined risk</b> (naked short options) does not.</li>
+          <li>The shaded vertical band is the one-standard-deviation expected move to expiry.</li>
+        </ul>
+        <p class="small">Prices come from Black-Scholes with NIFTY's typical skew (puts below spot priced at higher IV). Margins are rough estimates; your broker's number decides.</p>
+      </div>
+      <div class="desk" id="lab"><header><h4>Strategy lab</h4><small id="lab-sub"></small></header>
+        <div class="chips" id="lab-fams" style="margin-bottom:10px"></div>
+        <div class="card-grid" id="lab-cards"></div>
+        <div style="height:18px"></div>
+        <div class="controls">
+          <div class="field"><label>Index</label><div class="seg" id="lab-ix"><button aria-pressed="true" data-v="NIFTY">NIFTY</button><button aria-pressed="false" data-v="BANKNIFTY">Bank Nifty</button></div></div>
+          <div class="field"><label for="lab-s">Spot <output id="lab-so"></output></label><input id="lab-s" type="number" step="50" value="25800"></div>
+          <div class="field"><label for="lab-v">At-the-money IV <output id="lab-vo"></output></label><input id="lab-v" type="range" min="8" max="40" step="0.5" value="14"></div>
+          <div class="field"><label for="lab-d">Days to expiry <output id="lab-do"></output></label><input id="lab-d" type="range" min="2" max="60" step="1" value="30"></div>
+          <div class="field"><label for="lab-n">Lots</label><input id="lab-n" type="number" step="1" min="1" value="1"></div>
+        </div>
+        <div class="grid2">
+          <div style="min-width:0">
+            <div class="chart" id="lab-chart"></div>
+            <div class="legend"><span><i style="background:var(--s1)"></i>At expiry</span><span><i class="dash"></i>Today</span><span><i class="sw" style="background:var(--band)"></i>±1 SD expected move</span></div>
+            <div class="stats" id="lab-stats"></div>
+          </div>
+          <div style="min-width:0">
+            <div class="scroll"><table class="legs" id="lab-legs"></table></div>
+            <p style="margin:8px 0 0"><button class="btn ghost" id="lab-reset">Reset legs</button></p>
+            <div class="sinfo" id="lab-info"></div>
+          </div>
+        </div>
+      </div>
+      <div class="col"><div class="quiz" data-module="strategies"></div><div class="next" data-next="regimes"></div></div>
+    </section>
+
+    <!-- 7 REGIMES -->
+    <section data-route="regimes" hidden>
+      <div class="col">
+        <div class="eyebrow">Module 7 · Which strategy when</div>
+        <h2>Match the structure to the market</h2>
+        <p class="lede">Two questions decide most choices. Where do you think NIFTY goes? And are options cheap or expensive right now?</p>
+        <p>Direction is the first axis: up, sideways or down. Volatility is the second: is India VIX low, normal or high against its own history, and is implied volatility above or below what NIFTY has actually been doing? When options are cheap, owning them (buying convexity) makes sense. When they are expensive, selling them does, with the risk defined or hedged.</p>
+        <div class="callout data"><span class="lab">What our data says about the two axes</span><p>The volatility axis is where the evidence is: selling when implied volatility exceeded realised paid, and the premium was largest when VIX was high. The direction axis is much weaker: none of the timing rules we tested (dips, breakouts, oscillators, trend filters) gave option buyers a reliable edge on unseen years. Use your directional view to choose the side and the strikes, and keep size modest when the trade depends on it.</p></div>
+      </div>
+      <div class="desk"><header><h4>The regime map</h4><small>Click a cell for the reasoning and the Elliott Wave fit</small></header>
+        <div class="matrix" id="rg-matrix"></div>
+        <div id="rg-detail" style="margin-top:16px"></div>
+      </div>
+      <div class="desk"><header><h4>Strategy picker</h4><small>Three questions, a short list</small></header>
+        <div class="controls">
+          <div class="field"><label>Your NIFTY view</label><div class="seg" id="pk-dir"><button data-v="up" aria-pressed="false">Up</button><button data-v="side" aria-pressed="true">Sideways</button><button data-v="down" aria-pressed="false">Down</button><button data-v="move" aria-pressed="false">Big move</button></div></div>
+          <div class="field"><label>India VIX vs its usual range</label><div class="seg" id="pk-vol"><button data-v="low" aria-pressed="false">Low (below 13)</button><button data-v="normal" aria-pressed="true">Normal</button><button data-v="high" aria-pressed="false">High (above 18)</button></div></div>
+          <div class="field"><label>Risk style</label><div class="seg" id="pk-risk"><button data-v="defined" aria-pressed="true">Defined risk only</button><button data-v="hedge" aria-pressed="false">I can hedge daily</button></div></div>
+        </div>
+        <div id="pk-out"></div>
+      </div>
+      <div class="col">
+        <h3>Special situations</h3>
+        <ul class="tight">
+          <li><b>Before a binary event</b> (election, Budget, RBI, US Fed): IV is high. Compare the implied move with your own estimate. Buy a straddle only if you think the move is underpriced; otherwise wait and sell after the event, when IV drops.</li>
+          <li><b>Expiry week:</b> gamma is extreme. Short options move fast against you, and from 7 Dec 2026 settlement uses the 15:00–15:30 average. Expiry days themselves have not been more volatile close to close.</li>
+          <li><b>Strong trend:</b> static short strangles lose to trends. Hedge delta, or trade the trend with spreads.</li>
+          <li><b>Crisis:</b> when VIX spikes above 30, the premium is largest but swings are violent. Our data's best selling came after spikes, sized small and defined.</li>
+        </ul>
+      </div>
+      <div class="col"><div class="quiz" data-module="regimes"></div><div class="next" data-next="elliott"></div></div>
+    </section>
+
+    <!-- 8 ELLIOTT -->
+    <section data-route="elliott" hidden>
+      <div class="col">
+        <div class="eyebrow">Module 8 · Elliott Wave × options</div>
+        <h2>Waves as a map of risk</h2>
+        <p class="lede">Elliott Wave describes markets as repeating crowd cycles. Used with options, its biggest gift is the invalidation level: the price at which your count is wrong, which is exactly where a defined-risk spread should put its protection.</p>
+        <h3>The pattern in five minutes</h3>
+        <p>Markets advance in five waves (an <b>impulse</b>: 1, 2, 3, 4, 5) and correct in three (A, B, C). Waves 1, 3 and 5 go with the larger trend; 2 and 4 are pauses against it. Each wave is itself made of smaller waves, which is why you read the count top-down: monthly, then weekly, daily and hourly.</p>
+        <h4 style="margin-top:16px">Three rules that cannot be broken</h4>
+        <ul class="tight">
+          <li>Wave 2 never retraces more than 100% of wave 1.</li>
+          <li>Wave 3 is never the shortest of waves 1, 3 and 5.</li>
+          <li>Wave 4 never enters wave 1's price territory (except in diagonal triangles).</li>
+        </ul>
+        <h4 style="margin-top:16px">Guidelines that usually hold</h4>
+        <ul class="tight">
+          <li>Wave 2 often retraces 50–61.8% of wave 1; wave 4 often 23.6–38.2% of wave 3.</li>
+          <li>Wave 3 is often the extended wave, around 1.618 × wave 1.</li>
+          <li>Wave 5 often equals wave 1, or 0.618 × the distance from the start of 1 to the end of 3.</li>
+          <li><b>Alternation:</b> if wave 2 is sharp, wave 4 tends to be sideways, and vice versa.</li>
+          <li>Corrections come as zigzags (5-3-5, wave C often equal to A), flats (3-3-5, B near the start of A) or triangles (3-3-3-3-3, usually in wave 4 or B).</li>
+        </ul>
+      </div>
+      <div class="desk"><header><h4>The cycle, wave by wave</h4><small>Click a wave. The orange line sketches the typical India VIX mood (illustrative).</small></header>
+        <div class="chart" id="ew-chart"></div>
+        <div class="legend"><span><i style="background:var(--wave)"></i>Price</span><span><i style="background:var(--s2)"></i>Typical volatility mood</span></div>
+        <div id="ew-detail" style="margin-top:12px"></div>
+      </div>
+      <div class="desk"><header><h4>Fibonacci strike planner</h4><small>Enter a swing; get the wave levels and defined-risk option ideas</small></header>
+        <div class="controls">
+          <div class="field"><label for="fb-0">Wave 1 start (low)</label><input id="fb-0" type="number" step="10" value="22716"></div>
+          <div class="field"><label for="fb-1">Wave 1 end (high)</label><input id="fb-1" type="number" step="10" value="25800"></div>
+          <div class="field"><label for="fb-2">Wave 2 end (optional)</label><input id="fb-2" type="number" step="10" placeholder="blank = use 61.8%"></div>
+          <div class="field"><label for="fb-step">Strike step</label><select id="fb-step"><option value="50">50 (NIFTY)</option><option value="100">100 (Bank Nifty)</option></select></div>
+        </div>
+        <div class="scroll" id="fb-out"></div>
+        <p class="small">Example inputs use NIFTY's real swing from the 29 Sep 2026 low (22,716) to the 20 Nov 2026 close (25,800). Labelling that swing as wave 1 is only for the exercise. It is not a forecast or anyone's published count.</p>
+      </div>
+      <div class="col">
+        <h3>Using the count with options</h3>
+        <ul class="tight">
+          <li><b>Put protection at invalidation.</b> If your bullish count fails below a level, make that level the long strike of a put spread or the stop for a call. The structure then loses most exactly when the count is wrong.</li>
+          <li><b>Let volatility choose the structure, and the wave choose the side.</b> High IV after a wave-2 or wave-C decline favours selling put spreads. Low IV at a wave-5 high favours buying protection.</li>
+          <li><b>Always hold an alternate count.</b> If the alternate is very different, use smaller size or a wider defined-risk structure.</li>
+          <li><b>Confirm with momentum and breadth.</b> Wave 3 should show expanding breadth; wave 5 often shows momentum divergence.</li>
+        </ul>
+        <div class="callout warn"><span class="lab">What the evidence says</span><p>There is no peer-reviewed evidence that Elliott Wave forecasts markets. Batchelor and Ramyar (Dow Jones, 1914–2002) found Fibonacci ratios between waves no more often than chance. Counts are also subjective; two analysts often label the same chart differently.</p><p>Our own tests of momentum signals (RMI crossovers) and dip-buying found no standalone edge on unseen years. Treat Elliott Wave as a way to plan scenarios and place risk, not as a prediction engine.</p></div>
+      </div>
+      <div class="col"><div class="quiz" data-module="elliott"></div><div class="next" data-next="risk"></div></div>
+    </section>
+
+    <!-- 9 RISK -->
+    <section data-route="risk" hidden>
+      <div class="col">
+        <div class="eyebrow">Module 9 · Risk, sizing and Indian rules</div>
+        <h2>Stay in the game</h2>
+        <p class="lede">The edge in options is small. Surviving the bad week is what lets it compound.</p>
+        <h3>Size for the gap, not the margin</h3>
+        <p>Overnight moves carried about 43% of NIFTY's variance in 2020–26, and 58% over the last 250 sessions. Gaps above 2% happen on 1–3% of days; the largest recent ones were −9.6% (23 Mar 2020), −5.1% (7 Apr 2025) and +4.75% (3 Feb 2026). A position hedged at the close still takes the whole gap. So ask one question before every short-option trade: what do I lose if NIFTY opens 10% away tomorrow?</p>
+        <h3>Rules of thumb that held up</h3>
+        <ul class="tight">
+          <li><b>Risk per trade:</b> cap the realistic worst case (the maximum loss, or the gap loss for naked positions) at a few percent of capital.</li>
+          <li><b>Margin use:</b> keep at least half your capital free. Exchanges raise margins in a crisis, exactly when prices are moving against sellers.</li>
+          <li><b>Kelly:</b> the Kelly formula overstates size for payoffs with rare large losses. Professionals use half Kelly or less.</li>
+          <li><b>Stops and targets:</b> in our tests, profit targets and stops changed the win rate more than the result, and a 2× stop lowered the hedged strangle's Sharpe from 1.00 to 0.89.</li>
+        </ul>
+        <h3>Indian margin and expiry rules</h3>
+        <ul class="tight">
+          <li>Margin is SPAN plus exposure margin. A Sep 2026 SPAN estimate (NIFTY 23,350): short straddle ₹1.97 lakh, short strangle ₹1.77 lakh, iron condor ₹73–78k per lot. Scale up about 10% at NIFTY 25,800.</li>
+          <li>Short options pay an extra 2% extreme-loss margin on expiry day, and calendar spreads lose their margin benefit on expiry day.</li>
+          <li>Premium is collected upfront. Per-order freeze limits are 1,800 units for NIFTY and 900 for Bank Nifty.</li>
+          <li>Long options exercised at expiry pay STT of 0.15% of intrinsic value.</li>
+        </ul>
+      </div>
+      <div class="desk"><header><h4>Position sizer</h4><small>How many lots your rules allow</small></header>
+        <div class="chips" id="sz-presets" style="margin-bottom:12px"></div>
+        <div class="controls">
+          <div class="field"><label for="sz-cap">Capital (₹)</label><input id="sz-cap" type="number" step="100000" value="2500000"></div>
+          <div class="field"><label for="sz-risk">Max loss per trade (% of capital)</label><input id="sz-risk" type="number" step="0.5" value="4"></div>
+          <div class="field"><label for="sz-loss">Worst-case loss per lot (₹)</label><input id="sz-loss" type="number" step="1000" value="97500"></div>
+          <div class="field"><label for="sz-mg">Margin per lot (₹)</label><input id="sz-mg" type="number" step="1000" value="195000"></div>
+          <div class="field"><label for="sz-mx">Max margin use (% of capital)</label><input id="sz-mx" type="number" step="5" value="40"></div>
+        </div>
+        <div class="stats" id="sz-stats"></div>
+      </div>
+      <div class="col"><div class="quiz" data-module="risk"></div><div class="next" data-next="playbook"></div></div>
+    </section>
+
+    <!-- 10 PLAYBOOK -->
+    <section data-route="playbook" hidden>
+      <div class="col">
+        <div class="eyebrow">Module 10 · Our tested playbook</div>
+        <h2>The delta-hedged NIFTY strangle</h2>
+        <p class="lede">The one strategy that held up in both halves of 19 years of NSE data. Here are its exact rules, its results and its weak spots.</p>
+        <h3>The rules</h3>
+        <ol>
+          <li><b>Entry window.</b> When you hold no position, act on the first session on which the next NIFTY monthly expiry is 28–40 calendar days away.</li>
+          <li><b>Volatility filter.</b> Enter only if at-the-money implied volatility (India VIX is a close proxy) is above NIFTY's 20-day realised volatility. If not, check again each session while the window is open.</li>
+          <li><b>Strikes.</b> At about 15:20, sell the call and the put nearest 0.16 delta on that expiry.</li>
+          <li><b>Hedge.</b> Every session at about 15:20, if net delta is more than 0.10 per strangle lot from flat, trade NIFTY futures to the nearest whole lot of flat.</li>
+          <li><b>Exit.</b> Hold to expiry. No stops, no profit targets.</li>
+          <li><b>Size.</b> At least 5 strangle lots, so whole futures lots can hedge finely. About ₹26 lakh at a 10% volatility target.</li>
+        </ol>
+        <h3>Results, 2008–2026</h3>
+        <div class="scroll"><table class="t">
+          <tr><th>Measure</th><th class="num">Value</th></tr>
+          <tr><td>Return per year at a 10% volatility target</td><td class="num mono">8.1%</td></tr>
+          <tr><td>Maximum drawdown</td><td class="num mono">−11.8%</td></tr>
+          <tr><td>Worst month / worst day</td><td class="num mono">−7.3% / −4.8%</td></tr>
+          <tr><td>Sharpe ratio, 2008–16 / 2017–26</td><td class="num mono">1.12 / 0.95</td></tr>
+          <tr><td>Sharpe ratio, 2023–26</td><td class="num mono">0.0</td></tr>
+          <tr><td>Same rule, no volatility filter</td><td class="num mono">Sharpe 0.66</td></tr>
+          <tr><td>Same rule, unhedged</td><td class="num mono">Sharpe 0.23, drawdown −78%</td></tr>
+          <tr><td>Acting one session late</td><td class="num mono">Sharpe 0.45</td></tr>
+        </table></div>
+        <div class="callout warn"><span class="lab">Weak spots</span><ul class="tight"><li>In 2023–26, strangle credits thinned to 0.7% of spot and the edge was about zero.</li><li>Overnight gaps are not hedged. A 10% gap with high volatility would be worse than anything in the sample.</li><li>Published evidence on the volatility filter is mixed, so plan on a Sharpe between 0.66 and 1.0.</li></ul></div>
+        <h3>What failed</h3>
+        <ul class="tight">
+          <li>Every option-buying rule, including the dip-call (−3.8% a trade in 2008–13).</li>
+          <li>Static selling held to expiry, with or without iron-condor wings.</li>
+          <li>Far out-of-the-money unhedged selling: the 5-delta monthly call looked superb until the Oct–Nov 2026 rally.</li>
+          <li>Profit targets, 21-day exits and stops on the hedged book; Bank Nifty versions.</li>
+        </ul>
+      </div>
+      <div class="desk"><header><h4>Hedge ladder</h4><small>The real 26 Oct 2026 strangle: short 23,850 call and 21,750 put, 23 Nov expiry</small></header>
+        <div class="controls">
+          <div class="field"><label for="hl-s">NIFTY level <output id="hl-so"></output></label><input id="hl-s" type="range" min="20800" max="26000" step="25" value="22753"></div>
+          <div class="field"><label for="hl-d">Days to expiry <output id="hl-do"></output></label><input id="hl-d" type="range" min="1" max="28" step="1" value="28"></div>
+          <div class="field"><label for="hl-n">Strangle lots</label><input id="hl-n" type="number" step="1" min="1" value="6"></div>
+        </div>
+        <div class="stats" id="hl-stats"></div>
+        <div class="chart" id="hl-chart"></div>
+        <div class="legend"><span><i style="background:var(--s1)"></i>Futures lots to hold (negative = short) by NIFTY level</span><span><i class="sw" style="background:var(--ink)"></i>Your NIFTY level</span></div>
+        <p class="small">The daily signal script prints this ladder each evening, so at 15:20 you only need to look at NIFTY. Vols are held at 16% (the entry level) for the illustration.</p>
+      </div>
+      <div class="col"><div class="quiz" data-module="playbook"></div><div class="next" data-next="glossary"></div></div>
+    </section>
+
+    <!-- GLOSSARY -->
+    <section data-route="glossary" hidden>
+      <div class="wide">
+        <div class="eyebrow">Reference</div>
+        <h2>Glossary</h2>
+        <p class="lede">Every term in the course, in plain words.</p>
+        <div class="controls" style="margin-top:14px;max-width:520px"><div class="field"><label for="gl-q">Search terms</label><input id="gl-q" type="text" placeholder="Try delta, skew, wave 4"></div></div>
+        <div class="chips" id="gl-cats"></div>
+        <div class="gloss-list" id="gl-list"></div>
+      </div>
+    </section>
+
+    <!-- TUTOR -->
+    <section data-route="tutor" hidden>
+      <div class="col">
+        <div class="eyebrow">Ask the tutor</div>
+        <h2>Ask anything about options</h2>
+        <p class="lede">The tutor explains with analogies and NIFTY examples, using this course's research. It teaches; it does not tell you what to trade.</p>
+        <div id="tu-box">
+          <div class="chips" id="tu-chips"></div>
+          <div class="chat" id="tu-chat"></div>
+          <div class="composer"><textarea id="tu-in" rows="2" placeholder="Type a question, for example: how is a jade lizard different from a short strangle?"></textarea><div style="display:flex;gap:6px"><button class="btn" id="tu-send">Ask</button><button class="btn ghost" id="tu-stop" hidden>Stop</button></div></div>
+          <p class="small" id="tu-note">Each question uses your own Claude usage. The first question asks your permission.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+"use strict";
+const NS = "http://www.w3.org/2000/svg";
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const R = 0.065, Q = 0.012;
+
+/* ---------- maths ---------- */
+function erf(x) { const t = 1 / (1 + 0.3275911 * Math.abs(x)); const y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x); return x >= 0 ? y : -y; }
+const Ncdf = x => 0.5 * (1 + erf(x / Math.SQRT2));
+const npdf = x => Math.exp(-x * x / 2) / Math.sqrt(2 * Math.PI);
+function bs(S, K, T, v, type) {
+  if (T <= 1e-6 || v <= 0) {
+    const intr = type === "C" ? Math.max(S - K, 0) : Math.max(K - S, 0);
+    return { price: intr, delta: type === "C" ? (S > K ? 1 : 0) : (S < K ? -1 : 0), gamma: 0, theta: 0, vega: 0 };
+  }
+  const sd = v * Math.sqrt(T), d1 = (Math.log(S / K) + (R - Q + v * v / 2) * T) / sd, d2 = d1 - sd;
+  const dq = Math.exp(-Q * T), dr = Math.exp(-R * T);
+  const call = S * dq * Ncdf(d1) - K * dr * Ncdf(d2);
+  const price = type === "C" ? call : call - S * dq + K * dr;
+  const delta = type === "C" ? dq * Ncdf(d1) : dq * (Ncdf(d1) - 1);
+  const gamma = dq * npdf(d1) / (S * sd);
+  const vega = S * dq * npdf(d1) * Math.sqrt(T) / 100;
+  const th = type === "C" ? (-S * dq * npdf(d1) * v / (2 * Math.sqrt(T)) - R * K * dr * Ncdf(d2) + Q * S * dq * Ncdf(d1))
+                          : (-S * dq * npdf(d1) * v / (2 * Math.sqrt(T)) + R * K * dr * Ncdf(-d2) - Q * S * dq * Ncdf(-d1));
+  return { price: Math.max(price, 0), delta, gamma, theta: th / 365, vega };
+}
+/* NIFTY-style skew: puts below spot carry higher IV, calls above spot slightly lower */
+function ivAt(K, S, atm) { const m = Math.log(S / K); const v = atm + (m > 0 ? 0.56 : 0.35) * m; return Math.max(atm * 0.45, v); }
+function fmtInt(v) { return Math.round(v).toLocaleString("en-IN"); }
+function inr(v) { return (v < 0 ? "−₹" : "₹") + Math.abs(Math.round(v)).toLocaleString("en-IN"); }
+function inrShort(v) { const a = Math.abs(v), s = v < 0 ? "−" : ""; if (a >= 1e7) return s + "₹" + (a / 1e7).toFixed(2) + " Cr"; if (a >= 1e5) return s + "₹" + (a / 1e5).toFixed(a >= 1e6 ? 1 : 2) + " L"; if (a >= 1e3) return s + "₹" + (a / 1e3).toFixed(a >= 1e4 ? 0 : 1) + "k"; return s + "₹" + Math.round(a); }
+function pct(v, d = 1) { return (v >= 0 ? "" : "−") + Math.abs(v).toFixed(d) + "%"; }
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+
+/* ---------- storage (per-viewer convenience only) ---------- */
+const STORE_KEY = "owbw.v1";
+let store = { done: {}, quiz: {} };
+try { const s = JSON.parse(localStorage.getItem(STORE_KEY) || "null"); if (s && typeof s === "object") store = { done: s.done || {}, quiz: s.quiz || {} }; } catch (e) {}
+function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); } catch (e) {} }
+
+/* ---------- SVG chart helpers ---------- */
+function el(tag, attrs, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+function niceTicks(lo, hi, count) {
+  const span = hi - lo; if (!(span > 0)) return [lo];
+  const s0 = span / (count || 5), mag = Math.pow(10, Math.floor(Math.log10(s0))), e = s0 / mag;
+  const step = (e >= 7.5 ? 10 : e >= 3.5 ? 5 : e >= 1.5 ? 2 : 1) * mag; const t = [];
+  for (let v = Math.ceil(lo / step) * step; v <= hi + step * 1e-6; v += step) t.push(+v.toFixed(8));
+  return t;
+}
+function frame(host, o) {
+  host.innerHTML = "";
+  const W = Math.max(280, Math.round(host.clientWidth || 640)), H = o.h || 280;
+  const m = { l: o.padL == null ? 58 : o.padL, r: o.padR == null ? 18 : o.padR, t: 14, b: o.padB == null ? 34 : o.padB };
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, width: "100%", height: H, role: "img", "aria-label": o.label || "chart" }, host);
+  const sx = v => m.l + (v - o.xmin) / (o.xmax - o.xmin) * (W - m.l - m.r);
+  const sy = v => m.t + (1 - (v - o.ymin) / (o.ymax - o.ymin)) * (H - m.t - m.b);
+  const g = el("g", {}, svg);
+  if (!o.noY) for (const t of (o.yticks || niceTicks(o.ymin, o.ymax, o.ny || 5))) {
+    el("line", { x1: m.l, x2: W - m.r, y1: sy(t), y2: sy(t), class: t === 0 && o.zero ? "ax-zero" : "gridline" }, g);
+    const tx = el("text", { x: m.l - 8, y: sy(t) + 4, class: "tick", "text-anchor": "end" }, g); tx.textContent = o.yfmt ? o.yfmt(t) : t;
+  }
+  if (!o.noX) {
+    for (const t of (o.xticks || niceTicks(o.xmin, o.xmax, o.nx || 6))) {
+      const tx = el("text", { x: sx(t), y: H - m.b + 18, class: "tick", "text-anchor": "middle" }, g); tx.textContent = o.xfmt ? o.xfmt(t) : t;
+      el("line", { x1: sx(t), x2: sx(t), y1: H - m.b, y2: H - m.b + 4, class: "axis" }, g);
+    }
+    el("line", { x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b, class: "axis" }, g);
+  }
+  return { svg, g, sx, sy, W, H, m, o };
+}
+const pathD = pts => pts.map((p, i) => (i ? "L" : "M") + p[0].toFixed(1) + "," + p[1].toFixed(1)).join("");
+function hover(c, host, onX) {
+  const tip = document.createElement("div"); tip.className = "tip"; tip.hidden = true; host.appendChild(tip);
+  const cross = el("line", { class: "cross", y1: c.m.t, y2: c.H - c.m.b, x1: -10, x2: -10 }, c.svg);
+  const ov = el("rect", { x: c.m.l, y: c.m.t, width: Math.max(0, c.W - c.m.l - c.m.r), height: Math.max(0, c.H - c.m.t - c.m.b), fill: "transparent" }, c.svg);
+  const move = e => {
+    const r = c.svg.getBoundingClientRect(); const px = (e.clientX - r.left) * (c.W / r.width);
+    const xv = clamp(c.o.xmin + (px - c.m.l) / (c.W - c.m.l - c.m.r) * (c.o.xmax - c.o.xmin), Math.min(c.o.xmin, c.o.xmax), Math.max(c.o.xmin, c.o.xmax));
+    const res = onX(xv); if (!res) return;
+    cross.setAttribute("x1", c.sx(res.x)); cross.setAttribute("x2", c.sx(res.x));
+    tip.innerHTML = res.html; tip.hidden = false;
+    const hx = c.sx(res.x) / c.W * r.width; const w = tip.offsetWidth;
+    tip.style.left = (hx + 14 + w > r.width ? Math.max(0, hx - 14 - w) : hx + 14) + "px"; tip.style.top = "6px";
+  };
+  ov.addEventListener("pointermove", move); ov.addEventListener("pointerdown", move);
+  ov.addEventListener("pointerleave", () => { tip.hidden = true; cross.setAttribute("x1", -10); cross.setAttribute("x2", -10); });
+}
+
+/* Payoff chart: xs, expiry P&L, optional today P&L */
+function payoffChart(host, d) {
+  const all = d.exp.concat(d.today || []);
+  let lo = Math.min(...all, 0), hi = Math.max(...all, 0); const pad = (hi - lo) * 0.08 || 1000; lo -= pad; hi += pad;
+  const c = frame(host, { xmin: d.xs[0], xmax: d.xs[d.xs.length - 1], ymin: lo, ymax: hi, zero: true, yfmt: inrShort, xfmt: v => fmtInt(v), h: d.h || 290, nx: host.clientWidth < 500 ? 4 : 6, label: d.label });
+  if (d.band) el("rect", { x: c.sx(d.band[0]), y: c.m.t, width: Math.max(0, c.sx(d.band[1]) - c.sx(d.band[0])), height: c.H - c.m.t - c.m.b, class: "band" }, c.g);
+  const y0 = c.sy(0);
+  const pos = d.xs.map((x, i) => [c.sx(x), c.sy(Math.max(d.exp[i], 0))]), neg = d.xs.map((x, i) => [c.sx(x), c.sy(Math.min(d.exp[i], 0))]);
+  el("path", { d: pathD(pos) + `L${c.sx(d.xs[d.xs.length - 1])},${y0}L${c.sx(d.xs[0])},${y0}Z`, class: "profit" }, c.g);
+  el("path", { d: pathD(neg) + `L${c.sx(d.xs[d.xs.length - 1])},${y0}L${c.sx(d.xs[0])},${y0}Z`, class: "loss" }, c.g);
+  el("line", { x1: c.m.l, x2: c.W - c.m.r, y1: y0, y2: y0, class: "ax-zero" }, c.g);
+  if (d.spot != null) { el("line", { x1: c.sx(d.spot), x2: c.sx(d.spot), y1: c.m.t, y2: c.H - c.m.b, class: "spot" }, c.g); const t = el("text", { x: c.sx(d.spot) + 4, y: c.m.t + 11, class: "lbl" }, c.g); t.textContent = d.spotLabel || "Now " + fmtInt(d.spot); }
+  if (d.today) el("path", { d: pathD(d.xs.map((x, i) => [c.sx(x), c.sy(d.today[i])])), class: "lt0" }, c.g);
+  el("path", { d: pathD(d.xs.map((x, i) => [c.sx(x), c.sy(d.exp[i])])), class: "l1" }, c.g);
+  (d.bes || []).forEach(b => { el("circle", { cx: c.sx(b), cy: y0, r: 4.5, class: "dotk" }, c.g); const t = el("text", { x: c.sx(b), y: y0 - 9, class: "lbl strong", "text-anchor": "middle" }, c.g); t.textContent = fmtInt(b); });
+  if (d.mark != null) { const i = d.xs.reduce((bi, x, k) => Math.abs(x - d.mark) < Math.abs(d.xs[bi] - d.mark) ? k : bi, 0); el("circle", { cx: c.sx(d.xs[i]), cy: c.sy(d.exp[i]), r: 6, class: "dot1" }, c.g); }
+  hover(c, host, xv => {
+    let i = 0, best = Infinity; d.xs.forEach((x, k) => { const dd = Math.abs(x - xv); if (dd < best) { best = dd; i = k; } });
+    return { x: d.xs[i], html: `NIFTY at <b>${fmtInt(d.xs[i])}</b><br>At expiry: <b>${inr(d.exp[i])}</b>` + (d.today ? `<br>Today: <b>${inr(d.today[i])}</b>` : "") };
+  });
+  return c;
+}
+
+/* ---------- registry of renders per route ---------- */
+const RENDERS = {};
+function onRoute(route, fn) { (RENDERS[route] = RENDERS[route] || []).push(fn); }
+let resizeT; window.addEventListener("resize", () => { clearTimeout(resizeT); resizeT = setTimeout(() => (RENDERS[current] || []).forEach(f => f()), 160); });
+function segBind(id, cb) { const box = $("#" + id); box.addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; $$("button", box).forEach(x => x.setAttribute("aria-pressed", x === b ? "true" : "false")); cb(b.dataset.v); }); return () => $("button[aria-pressed=true]", box).dataset.v; }
+function stat(label, value, cls) { return `<div class="stat"><span>${label}</span><b class="${cls || ""}">${value}</b></div>`; }
+
+/* ---------- modules & navigation ---------- */
+const MODULES = [
+  ["basics", "Foundations", "What an option is, the four positions, how NSE contracts work", 20],
+  ["pricing", "What sets the premium", "Intrinsic and time value, the five inputs, decay, parity", 20],
+  ["greeks", "The Greeks", "Delta, gamma, theta, vega and delta hedging", 25],
+  ["volatility", "Volatility", "Implied vs realised, expected moves, the premium, skew", 25],
+  ["edge", "Who wins", "SEBI's numbers, expectancy, costs, blow-ups", 20],
+  ["strategies", "Strategy lab", "24 structures priced, drawn and explained", 40],
+  ["regimes", "Which strategy when", "Direction × volatility map and a picker", 20],
+  ["elliott", "Elliott Wave × options", "Rules, wave personality, a strike planner", 30],
+  ["risk", "Risk and Indian rules", "Gap sizing, margins, expiry mechanics", 20],
+  ["playbook", "Our tested playbook", "The delta-hedged strangle, rule by rule", 20]
+];
+const EXTRA = [["glossary", "Glossary"], ["tutor", "Ask the tutor"]];
+function buildNav() {
+  const ul = $("#nav"); const sel = $("#navsel"); ul.innerHTML = ""; sel.innerHTML = "";
+  const add = (route, label, n) => {
+    const li = document.createElement("li"); const a = document.createElement("a"); a.href = "#" + route; a.dataset.route = route;
+    a.innerHTML = `<span class="n">${n || ""}</span><span>${label}</span>${n ? `<span class="ok${store.done[route] ? " done" : ""}" aria-label="${store.done[route] ? "Done" : "Not done"}"></span>` : "<span></span>"}`;
+    li.appendChild(a); ul.appendChild(li);
+    const o = document.createElement("option"); o.value = route; o.textContent = (n ? n + " · " : "") + label; sel.appendChild(o);
+  };
+  add("start", "Welcome", "");
+  MODULES.forEach((m, i) => add(m[0], m[1], String(i + 1).padStart(2, "0")));
+  const s = document.createElement("li"); s.innerHTML = '<div class="sep"></div>'; ul.appendChild(s);
+  EXTRA.forEach(e => add(e[0], e[1], ""));
+  sel.onchange = () => { location.hash = sel.value; };
+  const done = MODULES.filter(m => store.done[m[0]]).length;
+  $("#progbar").style.width = (done / MODULES.length * 100) + "%";
+  $("#progtxt").textContent = `${done} of ${MODULES.length} modules done`;
+  const map = $("#map"); map.innerHTML = "";
+  MODULES.forEach((m, i) => { const li = document.createElement("li"); li.innerHTML = `<a href="#${m[0]}"><span class="n">Module ${i + 1} · ${m[3]} min${store.done[m[0]] ? " · done" : ""}</span><b>${m[1]}</b><small>${m[2]}</small></a>`; map.appendChild(li); });
+  setActive();
+}
+let current = "start";
+const ROUTES = ["start", ...MODULES.map(m => m[0]), ...EXTRA.map(e => e[0])];
+function setActive() { $$("#nav a").forEach(a => a.setAttribute("aria-current", a.dataset.route === current ? "page" : "false")); const sel = $("#navsel"); if (sel) sel.value = current; }
+function route() {
+  const h = (location.hash || "").replace("#", ""); const r = ROUTES.includes(h) ? h : "start";
+  current = r; $$("section[data-route]").forEach(s => { s.hidden = s.dataset.route !== r; });
+  setActive(); window.scrollTo(0, 0);
+  requestAnimationFrame(() => (RENDERS[r] || []).forEach(f => f()));
+}
+window.addEventListener("hashchange", route);
+
+/* ---------- next / prev buttons ---------- */
+function buildNext() {
+  $$(".next").forEach(box => {
+    const nx = box.dataset.next; const sec = box.closest("section").dataset.route; const i = MODULES.findIndex(m => m[0] === sec);
+    const prev = i > 0 ? MODULES[i - 1][0] : "start"; const nxLabel = (MODULES.find(m => m[0] === nx) || EXTRA.find(e => e[0] === nx) || [nx, nx])[1];
+    box.innerHTML = `<a class="btn ghost" style="text-decoration:none" href="#${prev}">Back</a><span style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn ghost" style="text-decoration:none" href="#tutor" data-ask="${sec}">Ask the tutor about this</a><a class="btn" style="text-decoration:none" href="#${nx}">Next: ${nxLabel}</a></span>`;
+  });
+}
+
+/* ---------- hero wave ---------- */
+const WAVE_PTS = [[0, 20], [1, 46], [2, 32], [3, 84], [4, 68], [5, 100], [6, 70], [7, 82], [8, 44]];
+const WAVE_LAB = ["", "1", "2", "3", "4", "5", "A", "B", "C"];
+function heroWave() {
+  const host = $("#heroWave"); const c = frame(host, { xmin: -0.3, xmax: 8.4, ymin: 0, ymax: 112, noX: true, noY: true, h: 240, padL: 8, padR: 8, label: "Elliott Wave cycle" });
+  el("path", { d: pathD(WAVE_PTS.map(p => [c.sx(p[0]), c.sy(p[1])])), class: "wave" }, c.g);
+  WAVE_PTS.forEach((p, i) => { if (!i) return; const up = p[1] > WAVE_PTS[i - 1][1]; const y = c.sy(p[1]) + (up ? -16 : 18); el("circle", { cx: c.sx(p[0]), cy: y, r: 12, class: "wcirc" }, c.g); const t = el("text", { x: c.sx(p[0]), y: y + 5, class: "wlab", "text-anchor": "middle" }, c.g); t.textContent = WAVE_LAB[i]; });
+}
+onRoute("start", heroWave);
+
+/* ---------- 1: expiry calculator ---------- */
+(function () {
+  const side = segBind("ex-side", draw), type = segBind("ex-type", draw);
+  ["ex-k", "ex-p", "ex-s"].forEach(id => $("#" + id).addEventListener("input", draw));
+  function draw() {
+    const q = +side(), t = type(), K = +$("#ex-k").value || 26000, P = +$("#ex-p").value || 0, S = +$("#ex-s").value, lot = 65;
+    $("#ex-so").textContent = fmtInt(S);
+    const pnl = x => q * ((t === "C" ? Math.max(x - K, 0) : Math.max(K - x, 0)) - P) * lot;
+    const xs = []; for (let x = K * 0.94; x <= K * 1.06; x += K * 0.0015) xs.push(x);
+    const be = t === "C" ? K + P : K - P;
+    const maxP = q > 0 ? (t === "C" ? "Unlimited" : inr((K - P) * lot)) : inr(P * lot);
+    const maxL = q > 0 ? inr(-P * lot) : (t === "C" ? "Unlimited" : inr(-(K - P) * lot));
+    const now = pnl(S);
+    $("#ex-stats").innerHTML = stat("P&L at this level", inr(now), now >= 0 ? "pos" : "neg") + stat(q > 0 ? "Premium paid" : "Premium received", inr(P * lot)) + stat("Breakeven", fmtInt(be)) + stat("Max profit", maxP) + stat("Max loss", maxL);
+    payoffChart($("#ex-chart"), { xs, exp: xs.map(pnl), bes: [be], mark: S, label: "Payoff at expiry" });
+  }
+  onRoute("basics", draw);
+})();
+
+/* ---------- 2: premium explorer ---------- */
+(function () {
+  ["pe-s", "pe-k", "pe-d", "pe-v"].forEach(id => $("#" + id).addEventListener("input", draw));
+  function draw() {
+    const S = +$("#pe-s").value, K = +$("#pe-k").value, D = +$("#pe-d").value, v = +$("#pe-v").value / 100;
+    $("#pe-so").textContent = fmtInt(S); $("#pe-ko").textContent = fmtInt(K); $("#pe-do").textContent = D + " d"; $("#pe-vo").textContent = (v * 100).toFixed(1) + "%";
+    const c = bs(S, K, D / 365, v, "C"), p = bs(S, K, D / 365, v, "P");
+    const ic = Math.max(S - K, 0), ip = Math.max(K - S, 0);
+    $("#pe-stats").innerHTML = stat("Call premium", c.price.toFixed(1) + " pts") + stat("…intrinsic / time", ic.toFixed(0) + " / " + (c.price - ic).toFixed(1)) + stat("Put premium", p.price.toFixed(1) + " pts") + stat("…intrinsic / time", ip.toFixed(0) + " / " + Math.max(p.price - ip, 0).toFixed(1)) + stat("Call cost per lot", inr(c.price * 65));
+    const days = []; for (let d = 60; d >= 0; d -= 0.5) days.push(d);
+    const cs = days.map(d => bs(S, K, d / 365, v, "C").price), ps = days.map(d => bs(S, K, d / 365, v, "P").price);
+    const host = $("#pe-chart"); const ymax = Math.max(...cs, ...ps) * 1.1 || 10;
+    const ch = frame(host, { xmin: 60, xmax: 0, ymin: 0, ymax, yfmt: v => fmtInt(v), xfmt: v => v + "d", h: 260, label: "Premium versus days to expiry" });
+    el("path", { d: pathD(days.map((d, i) => [ch.sx(d), ch.sy(cs[i])])), class: "l1" }, ch.g);
+    el("path", { d: pathD(days.map((d, i) => [ch.sx(d), ch.sy(ps[i])])), class: "l2" }, ch.g);
+    el("circle", { cx: ch.sx(D), cy: ch.sy(c.price), r: 5.5, class: "dot1" }, ch.g); el("circle", { cx: ch.sx(D), cy: ch.sy(p.price), r: 5.5, class: "dot2" }, ch.g);
+    const t = el("text", { x: ch.W - ch.m.r, y: ch.H - ch.m.b - 6, class: "lbl", "text-anchor": "end" }, ch.g); t.textContent = "expiry →";
+    hover(ch, host, xv => { const d = Math.round(xv * 2) / 2; const i = days.indexOf(d); if (i < 0) return null; return { x: d, html: `<b>${d}</b> days left<br>Call: <b>${cs[i].toFixed(1)}</b> pts<br>Put: <b>${ps[i].toFixed(1)}</b> pts` }; });
+  }
+  onRoute("pricing", draw);
+})();
+
+/* ---------- 3: greeks explorer ---------- */
+(function () {
+  const type = segBind("gk-type", draw);
+  ["gk-s", "gk-k", "gk-d", "gk-v"].forEach(id => $("#" + id).addEventListener("input", draw));
+  function draw() {
+    const t = type(), S = +$("#gk-s").value, K = +$("#gk-k").value, D = +$("#gk-d").value, v = +$("#gk-v").value / 100, lot = 65;
+    $("#gk-so").textContent = fmtInt(S); $("#gk-ko").textContent = fmtInt(K); $("#gk-do").textContent = D + " d"; $("#gk-vo").textContent = (v * 100).toFixed(1) + "%";
+    const g = bs(S, K, D / 365, v, t);
+    $("#gk-stats").innerHTML = stat("Premium", g.price.toFixed(1) + " pts · " + inr(g.price * lot)) + stat("Delta", g.delta.toFixed(3) + " · " + inr(g.delta * lot) + "/pt") + stat("Gamma (per 100 pts)", (g.gamma * 100).toFixed(4)) + stat("Theta per day", inr(g.theta * lot), "neg") + stat("Vega per IV point", inr(g.vega * lot));
+    const xs = []; for (let x = K * 0.92; x <= K * 1.08; x += K * 0.002) xs.push(x);
+    const host = $("#gk-chart"); const neg = t === "P";
+    const ch = frame(host, { xmin: xs[0], xmax: xs[xs.length - 1], ymin: neg ? -1.05 : -0.02, ymax: neg ? 0.02 : 1.05, yfmt: v => v.toFixed(1), xfmt: v => fmtInt(v), h: 260, nx: host.clientWidth < 500 ? 4 : 6, label: "Delta versus NIFTY level" });
+    [[30, "l1"], [7, "l2"], [1, "l3"]].forEach(([dd, cls]) => el("path", { d: pathD(xs.map(x => [ch.sx(x), ch.sy(bs(x, K, dd / 365, v, t).delta)])), class: cls }, ch.g));
+    el("line", { x1: ch.sx(S), x2: ch.sx(S), y1: ch.m.t, y2: ch.H - ch.m.b, class: "spot" }, ch.g);
+    const lab = el("text", { x: ch.sx(K) + 4, y: ch.m.t + 11, class: "lbl" }, ch.g); lab.textContent = "Strike " + fmtInt(K);
+    el("line", { x1: ch.sx(K), x2: ch.sx(K), y1: ch.m.t, y2: ch.H - ch.m.b, class: "gridline" }, ch.g);
+    hover(ch, host, xv => ({ x: xv, html: `NIFTY <b>${fmtInt(xv)}</b><br>30 days: <b>${bs(xv, K, 30 / 365, v, t).delta.toFixed(2)}</b><br>7 days: <b>${bs(xv, K, 7 / 365, v, t).delta.toFixed(2)}</b><br>1 day: <b>${bs(xv, K, 1 / 365, v, t).delta.toFixed(2)}</b>` }));
+  }
+  onRoute("greeks", draw);
+})();
+
+/* ---------- 4: volatility ---------- */
+const VOL_YEARS = [[2008, 45.67, 42.51], [2009, 36.24, 30.50], [2010, 20.13, 15.90], [2011, 21.58, 19.91], [2012, 18.02, 14.38], [2013, 17.20, 17.59], [2014, 15.67, 12.57], [2015, 16.31, 16.10], [2016, 15.72, 14.04], [2017, 11.20, 9.00], [2018, 13.61, 12.05], [2019, 15.06, 13.24], [2020, 26.41, 24.11], [2021, 16.80, 14.63], [2022, 18.03, 16.33], [2023, 11.21, 9.14], [2024, 13.80, 12.84], [2025, 12.20, 10.15], [2026, 14.08, 13.26]];
+const VOL_Q = [["8.9–12.4%", 0.82, 1.13], ["12.4–14.8%", 0.80, 1.08], ["14.8–17.2%", 1.31, 1.04], ["17.2–22.7%", 2.41, 0.96], ["22.7–84.6%", 5.41, 0.92]];
+(function () {
+  ["em-s", "em-v", "em-d"].forEach(id => $("#" + id).addEventListener("input", em));
+  function em() {
+    const S = +$("#em-s").value || 0, v = (+$("#em-v").value || 0) / 100, d = +$("#em-d").value || 0, T = d / 365;
+    const sd = S * v * Math.sqrt(T), day = S * v / Math.sqrt(252);
+    let kc = S, kp = S; for (let k = Math.round(S / 50) * 50; k < S * 1.5; k += 50) { if (bs(S, k, T, ivAt(k, S, v), "C").delta <= 0.16) { kc = k; break; } }
+    for (let k = Math.round(S / 50) * 50; k > S * 0.5; k -= 50) { if (-bs(S, k, T, ivAt(k, S, v), "P").delta <= 0.16) { kp = k; break; } }
+    $("#em-stats").innerHTML = stat("Typical daily move", "±" + fmtInt(day) + " pts") + stat("±1 SD to expiry", "±" + fmtInt(sd) + " pts") + stat("68% range", fmtInt(S - sd) + " – " + fmtInt(S + sd)) + stat("ATM straddle ≈", fmtInt(0.8 * sd) + " pts") + stat("16-delta strikes", fmtInt(kp) + "P / " + fmtInt(kc) + "C");
+  }
+  function vr() {
+    const host = $("#vr-chart");
+    const c = frame(host, { xmin: 2007.6, xmax: 2026.4, ymin: 0, ymax: 50, yfmt: v => v + "%", xfmt: v => "'" + String(v).slice(2), xticks: host.clientWidth < 520 ? [2008, 2012, 2016, 2020, 2024] : [2008, 2010, 2012, 2014, 2016, 2018, 2020, 2022, 2024, 2026], h: 260, padL: 44, label: "Implied and realised volatility by year" });
+    el("path", { d: pathD(VOL_YEARS.map(r => [c.sx(r[0]), c.sy(r[1])])), class: "l1" }, c.g);
+    el("path", { d: pathD(VOL_YEARS.map(r => [c.sx(r[0]), c.sy(r[2])])), class: "l2" }, c.g);
+    VOL_YEARS.forEach(r => { el("circle", { cx: c.sx(r[0]), cy: c.sy(r[1]), r: 3.5, class: "dot1" }, c.g); el("circle", { cx: c.sx(r[0]), cy: c.sy(r[2]), r: 3.5, class: "dot2" }, c.g); });
+    const last = VOL_YEARS[0]; const t1 = el("text", { x: c.sx(last[0]) + 8, y: c.sy(last[1]) - 6, class: "lbl" }, c.g); t1.textContent = "Implied";
+    const t2 = el("text", { x: c.sx(last[0]) + 8, y: c.sy(last[2]) + 14, class: "lbl" }, c.g); t2.textContent = "Realised";
+    hover(c, host, xv => { const r = VOL_YEARS.reduce((b, x) => Math.abs(x[0] - xv) < Math.abs(b[0] - xv) ? x : b); return { x: r[0], html: `<b>${r[0]}</b><br>Implied: <b>${r[1].toFixed(1)}%</b><br>Realised: <b>${r[2].toFixed(1)}%</b><br>Premium: <b>${(r[1] - r[2]).toFixed(1)}</b> pts` }; });
+    $("#vr-table").innerHTML = '<table class="t"><tr><th>Year</th><th class="num">Implied</th><th class="num">Realised</th><th class="num">Premium</th></tr>' + VOL_YEARS.map(r => `<tr><td>${r[0]}</td><td class="num mono">${r[1].toFixed(1)}%</td><td class="num mono">${r[2].toFixed(1)}%</td><td class="num mono">${(r[1] - r[2]).toFixed(2)}</td></tr>`).join("") + "</table>";
+  }
+  function vq() {
+    const host = $("#vq-chart"); const n = VOL_Q.length;
+    const c = frame(host, { xmin: -0.5, xmax: n - 0.5, ymin: 0, ymax: 6, yfmt: v => v + " pts", xticks: [], h: 240, padL: 50, padB: 40, label: "Volatility premium by IV level" });
+    const bw = Math.min(70, (c.W - c.m.l - c.m.r) / n * 0.55);
+    VOL_Q.forEach((q, i) => {
+      const x = c.sx(i), y = c.sy(q[1]), y0 = c.sy(0), h = y0 - y, r = Math.min(4, h);
+      el("path", { d: `M${x - bw / 2},${y0}V${y + r}Q${x - bw / 2},${y} ${x - bw / 2 + r},${y}H${x + bw / 2 - r}Q${x + bw / 2},${y} ${x + bw / 2},${y + r}V${y0}Z`, class: "bar1" }, c.g);
+      const t = el("text", { x, y: y - 7, class: "lbl strong", "text-anchor": "middle" }, c.g); t.textContent = "+" + q[1].toFixed(2);
+      const xl = el("text", { x, y: c.H - c.m.b + 18, class: "tick", "text-anchor": "middle" }, c.g); xl.textContent = q[0];
+    });
+    const lab = el("text", { x: c.m.l, y: c.H - 4, class: "tick" }, c.g); lab.textContent = "Implied volatility level (cheapest → dearest fifth)";
+    hover(c, host, xv => { const i = clamp(Math.round(xv), 0, n - 1); const q = VOL_Q[i]; return { x: i, html: `IV <b>${q[0]}</b><br>Implied − realised: <b>+${q[1].toFixed(2)}</b> pts<br>Real ÷ priced move: <b>${q[2].toFixed(2)}</b>` }; });
+  }
+  onRoute("volatility", em); onRoute("volatility", vr); onRoute("volatility", vq);
+})();
+
+/* ---------- 5: expectancy & costs ---------- */
+(function () {
+  const P = [
+    ["Buy ATM call, 10 days", 43.1, 71.3, 55.3, "On premium paid, 420 NIFTY trades. Slightly negative: the call buyer's typical fate."],
+    ["Buy 25-delta call", 35.2, 125.4, 64.3, "On premium, 420 trades. Positive in-sample but not statistically reliable."],
+    ["Dip-call", 41.4, 86.3, 54.6, "On premium, 116 trades. Looked great in 2020–26, lost in 2008–13."],
+    ["Sell 5-delta weekly put", 97.3, 0.9, 13.6, "On margin, 516 trades. Tiny wins, rare large losses; the worst trade lost 69% of margin."],
+    ["Unhedged 16-delta strangle", 78.3, 14.7, 56.1, "On margin, 138 trades. Wins most months and still loses money."],
+    ["Hedged strangle + filter (core)", 69.1, 9.7, 6.7, "On margin, 123 trades. Lower win rate, but losses are small: the edge."]
+  ];
+  const box = $("#xp-presets");
+  P.forEach((p, i) => { const b = document.createElement("button"); b.className = "chip"; b.textContent = p[0]; b.setAttribute("aria-pressed", i === 0 ? "true" : "false"); b.onclick = () => { $$(".chip", box).forEach(x => x.setAttribute("aria-pressed", x === b ? "true" : "false")); $("#xp-w").value = p[1]; $("#xp-aw").value = p[2]; $("#xp-al").value = p[3]; $("#xp-note").textContent = p[4]; calc(); }; box.appendChild(b); });
+  $("#xp-note").textContent = P[0][4];
+  ["xp-w", "xp-aw", "xp-al"].forEach(id => $("#" + id).addEventListener("input", () => { $$(".chip", box).forEach(x => x.setAttribute("aria-pressed", "false")); calc(); }));
+  function calc() {
+    const w = (+$("#xp-w").value || 0) / 100, aw = +$("#xp-aw").value || 0, al = Math.abs(+$("#xp-al").value || 0);
+    const e = w * aw - (1 - w) * al; const be = al / (aw + al) * 100;
+    $("#xp-stats").innerHTML = stat("Expectancy per trade", pct(e, 2), e >= 0 ? "pos" : "neg") + stat("Break-even win rate", be.toFixed(1) + "%") + stat("Wins needed to repay one loss", aw > 0 ? (al / aw).toFixed(1) : "—") + stat("Payoff ratio", al > 0 ? (aw / al).toFixed(2) + " : 1" : "—");
+  }
+  ["cc-sell", "cc-buy", "cc-lots", "cc-br"].forEach(id => $("#" + id).addEventListener("input", cost));
+  function cost() {
+    const s = +$("#cc-sell").value || 0, b = +$("#cc-buy").value || 0, n = Math.max(1, +$("#cc-lots").value || 1), br = +$("#cc-br").value || 0, q = 65 * n;
+    const ts = s * q, tb = b * q; const stt = 0.0015 * ts, nse = 0.0003553 * (ts + tb), sebi = (ts + tb) * 1e-6, stamp = 0.00003 * tb, brok = 2 * br, gst = 0.18 * (brok + nse + sebi);
+    const tot = stt + nse + sebi + stamp + brok + gst, gross = ts - tb;
+    $("#cc-stats").innerHTML = stat("Gross P&L", inr(gross), gross >= 0 ? "pos" : "neg") + stat("STT", inr(stt)) + stat("Exchange + SEBI + stamp", inr(nse + sebi + stamp)) + stat("Brokerage + GST", inr(brok + gst)) + stat("Total costs", inr(tot)) + stat("Costs as % of gross", gross ? (tot / Math.abs(gross) * 100).toFixed(1) + "%" : "—");
+  }
+  onRoute("edge", calc); onRoute("edge", cost);
+})();
+
+/* ---------- 6: strategy lab ---------- */
+const IDX = { NIFTY: { spot: 25800, lot: 65, step: 50, iv: 14 }, BANKNIFTY: { spot: 64635, lot: 30, step: 100, iv: 16 } };
+const STRATS = [
+  { id: "long-call", n: "Long call", f: "Bullish", legs: [["C", "d", 0.5, 1]], use: "You expect a sharp rise soon and options are cheap (low India VIX).", avoid: "A slow grind up, a flat market, or high IV before an event.", how: "NIFTY must rise past strike + premium before time decay eats the premium.", risk: "Lose the whole premium if NIFTY does not rise enough by expiry.", ew: "Early wave 3, once a wave-2 low has held; the start of wave 1.", an: "The token amount on a flat: small cost, big upside if prices jump.", data: "Buying at-the-money NIFTY calls for 10 sessions lost 0.7% a trade over 420 trades (2008–26); 43% won." },
+  { id: "long-put", n: "Long put", f: "Bearish", legs: [["P", "d", 0.5, 1]], use: "You expect a fast fall while IV is still low.", avoid: "After a crash, when puts are expensive.", how: "NIFTY must fall below strike − premium before decay wins.", risk: "Lose the premium if the fall does not come in time.", ew: "Early wave A or C down; as cheap insurance late in wave 5.", an: "Car insurance: a small premium for protection against a wreck.", data: "Buying at-the-money puts lost in almost every period we tested: NIFTY puts are priced as crash insurance." },
+  { id: "bull-call", n: "Bull call spread", f: "Bullish", legs: [["C", "d", 0.5, 1], ["C", "d", 0.25, -1]], use: "Moderately bullish with a target; IV normal or high.", avoid: "When you expect a huge move beyond the short strike.", how: "The sold call pays for part of the bought call. Profit is capped at the short strike.", risk: "Lose the net debit if NIFTY stays below the long strike.", ew: "Wave 3 toward its 1.618 target; wave C up in a flat.", an: "Buying the lift to a chosen floor at a discount, giving up the floors above.", data: "Not tested as a standalone rule." },
+  { id: "bull-put", n: "Bull put spread", f: "Bullish", legs: [["P", "d", 0.30, -1], ["P", "d", 0.10, 1]], use: "Mildly bullish or neutral, IV high, with a clear support below.", avoid: "Before binary events; in downtrends.", how: "Collect a credit; keep it if NIFTY stays above the short put.", risk: "Loss is capped at the strike gap minus the credit.", ew: "After a wave-2 or wave-C low: short put above the invalidation level, long put below it.", an: "Selling flood insurance on a hill, with reinsurance bought for the valley.", data: "Monthly 25/10-delta put spreads closed 7 days before expiry were positive but weak (t 1.4 NIFTY, 1.8 Bank Nifty)." },
+  { id: "bear-put", n: "Bear put spread", f: "Bearish", legs: [["P", "d", 0.5, 1], ["P", "d", 0.25, -1]], use: "Moderately bearish with a target; puts are expensive.", avoid: "When a crash beyond the short strike is your main scenario.", how: "The sold put cheapens the bought put; profit caps at the short strike.", risk: "Lose the debit if NIFTY does not fall.", ew: "Wave A or C down, targeting C = A.", an: "Insurance with a deductible: cheaper cover for the likely damage.", data: "Not tested." },
+  { id: "bear-call", n: "Bear call spread", f: "Bearish", legs: [["C", "d", 0.30, -1], ["C", "d", 0.10, 1]], use: "A rally into resistance with rich IV; you think NIFTY stays below a level.", avoid: "Strong uptrends and short squeezes.", how: "Collect a credit; keep it if NIFTY stays below the short call.", risk: "Capped at the strike gap minus the credit.", ew: "Wave B rallies; wave 5 exhaustion above its targets.", an: "Renting out your umbrella on a sunny forecast, with a spare in the boot.", data: "Monthly 25/10-delta call spreads lost on NIFTY in 2008–26: near-money calls in India are cheap, not rich." },
+  { id: "short-put", n: "Short put", f: "Bullish", legs: [["P", "d", 0.25, -1]], use: "Happy to be long NIFTY lower down; IV high after a fall.", avoid: "Before binary events; with high leverage.", how: "Keep the premium if NIFTY stays above the strike.", risk: "Large: the loss grows point for point as NIFTY falls.", ew: "The end of wave 2 or wave C, when fear makes puts rich.", an: "Being the insurer: steady small premiums, rare big claims.", data: "Held to expiry it lost. With a 50% profit target and 2× stop: Sharpe 0.52 but a −39% drawdown at test size." },
+  { id: "short-call", n: "Short call", f: "Bearish", legs: [["C", "d", 0.25, -1]], use: "Rarely; only far out of the money and small.", avoid: "Bull markets and short squeezes.", how: "Keep the premium if NIFTY stays below the strike.", risk: "Unlimited as NIFTY rises.", ew: "Only at a mature wave 5 or B with strict size.", an: "Promising to sell your flat at today's price, whatever the market does.", data: "5-delta monthly calls won 96% of the time until the Oct–Nov 2026 rally, when one trade lost about a year of gains." },
+  { id: "long-straddle", n: "Long straddle", f: "Big move", legs: [["C", "atm", 0, 1], ["P", "atm", 0, 1]], use: "A big move either way and options are cheap, or an event you think is underpriced.", avoid: "High IV; quiet markets.", how: "Profit when NIFTY moves more than the total premium.", risk: "Lose both premiums if NIFTY stays near the strike.", ew: "Late wave 5, or the apex of a triangle before the thrust.", an: "Packing both an umbrella and sunglasses for unknown weather.", data: "Buying straddles when IV rank was below 20 still lost (−0.9% a trade). Election day 2024 was the exception." },
+  { id: "long-strangle", n: "Long strangle", f: "Big move", legs: [["C", "d", 0.25, 1], ["P", "d", 0.25, 1]], use: "Expect a very large move; want lower cost than a straddle.", avoid: "Range-bound markets.", how: "Profit when NIFTY breaks beyond either breakeven.", risk: "Both options can expire worthless.", ew: "End of a long sideways wave 4 or a triangle.", an: "A cheaper umbrella and sunglasses: useful only in proper rain or sun.", data: "Not tested." },
+  { id: "short-straddle", n: "Short straddle", f: "Neutral", legs: [["C", "atm", 0, -1], ["P", "atm", 0, -1]], use: "Range-bound, IV high, and you hedge delta.", avoid: "Trends, events, low IV.", how: "Collect two at-the-money premiums; profit if NIFTY stays near the strike.", risk: "Unlimited either way; large gamma near expiry.", ew: "Wave 4 or wave B triangles.", an: "Betting the cricket score stays close to today's run rate.", data: "Unhedged it lost (−6.6% of credit in 2020–26). Hedged daily: Sharpe 0.52 over 2008–26." },
+  { id: "short-strangle", n: "Short strangle", f: "Neutral", legs: [["C", "d", 0.16, -1], ["P", "d", 0.16, -1]], use: "Range or mild drift, IV above realised, hedged with futures.", avoid: "Unhedged in trends; before binary events.", how: "Collect two out-of-the-money premiums; keep them if NIFTY stays between the strikes.", risk: "Unlimited either side.", ew: "Wave 4 consolidations; B-wave ranges.", an: "Two insurance policies on events that rarely happen, with no reinsurance.", data: "Unhedged: 78% wins but a net loss (worst trade −312% of margin, 2020). Delta-hedged: Sharpe 0.66; with the IV-above-realised filter, 1.00." },
+  { id: "iron-condor", n: "Iron condor", f: "Neutral", legs: [["P", "d", 0.05, 1], ["P", "d", 0.16, -1], ["C", "d", 0.16, -1], ["C", "d", 0.05, 1]], use: "A range with defined risk; IV high.", avoid: "Strong trends; low premium.", how: "A short strangle with long wings that cap the loss.", risk: "Capped at the wing width minus the credit.", ew: "Wave 4 ranges; B triangles, with wings beyond the invalidation levels.", an: "A fenced cricket ground: the ball can roll anywhere inside the boundary.", data: "Static: lost 0.8% a trade. Hedged with the filter: Sharpe 0.44, below the strangle, because wings cost more than they save." },
+  { id: "iron-fly", n: "Iron butterfly", f: "Neutral", legs: [["P", "d", 0.10, 1], ["P", "atm", 0, -1], ["C", "atm", 0, -1], ["C", "d", 0.10, 1]], use: "You expect NIFTY to pin near one level; IV high.", avoid: "Any trending market.", how: "A short straddle with protective wings.", risk: "Capped at the wing width minus the credit.", ew: "Late wave 4 near its 38.2% retracement; triangle apex.", an: "Betting the train arrives on the dot, with a refund if it is very late.", data: "Hedged: Sharpe 0.25; static versions lost." },
+  { id: "long-fly", n: "Long call butterfly", f: "Neutral", legs: [["C", "off", -1.5, 1], ["C", "off", 0, -2], ["C", "off", 1.5, 1]], use: "A target level by expiry, cheaply.", avoid: "When NIFTY is likely to run far.", how: "Buy one low and one high strike, sell two in the middle; best result at the middle.", risk: "The small debit paid.", ew: "A wave-4 end at the 38.2% level; a C wave reaching C = A.", an: "A dartboard: cheap darts, big prize only for the bullseye.", data: "Not tested." },
+  { id: "calendar", n: "Call calendar", f: "Neutral", legs: [["C", "atm", 0, -1, 7], ["C", "atm", 0, 1, 35]], use: "A quiet week ahead; you expect IV to rise later.", avoid: "Big moves soon; expiry day (no calendar margin benefit).", how: "The near option decays faster than the far one.", risk: "Roughly the debit if NIFTY moves far away.", ew: "A wave-4 pause before wave 5.", an: "Subletting your flat by the week while you hold the yearly lease.", data: "Not tested: end-of-day data cannot capture this spread well." },
+  { id: "call-back", n: "Call ratio backspread", f: "Bullish", legs: [["C", "atm", 0, -1], ["C", "d", 0.25, 2]], use: "Expect explosive upside; IV low.", avoid: "A slow drift up to the long strike.", how: "Sell one near call, buy two further calls: small cost, big upside.", risk: "Worst at the long strike at expiry.", ew: "A wave-3 launch from a confirmed wave-2 low.", an: "Two lottery tickets financed by selling one sure-ish bet.", data: "Not tested." },
+  { id: "put-back", n: "Put ratio backspread", f: "Bearish", legs: [["P", "atm", 0, -1], ["P", "d", 0.25, 2]], use: "Expect a crash; IV still low.", avoid: "A slow fall to the long strike.", how: "Sell one near put, buy two further puts.", risk: "Worst at the long strike at expiry.", ew: "After a complete five-wave advance, ahead of wave A or C.", an: "Cheap earthquake cover funded by selling a minor-damage policy.", data: "Not tested." },
+  { id: "protective-put", n: "Protective put", f: "Hedge", legs: [["F", "", 0, 1], ["P", "d", 0.30, 1]], use: "You hold NIFTY exposure and want a floor.", avoid: "Paying for protection all the time.", how: "The put pays if NIFTY falls below its strike.", risk: "The premium drags returns in calm markets.", ew: "Late wave 5, when IV is low and divergences appear.", an: "Home insurance on the house you live in.", data: "Research: standing put protection cut a portfolio's Sharpe from 0.37 to 0.21 (2006–14). Buy it selectively." },
+  { id: "covered-call", n: "Covered call", f: "Hedge", legs: [["F", "", 0, 1], ["C", "d", 0.20, -1]], use: "Long-term long, expecting a slow grind; IV normal.", avoid: "Strong bull runs that blow through the strike.", how: "Sell a call against your long to earn income.", risk: "The downside of the long, less the premium.", ew: "Wave 5 or B rallies, where upside is limited anyway.", an: "Renting out a room in the house you own.", data: "Research: covered calls are mostly market exposure; removing their timing bet raised Sharpe from 0.37 to 0.52 (AQR)." },
+  { id: "collar", n: "Collar", f: "Hedge", legs: [["F", "", 0, 1], ["P", "d", 0.25, 1], ["C", "d", 0.25, -1]], use: "Protect gains cheaply after a big run.", avoid: "When you want full upside.", how: "The sold call pays for the bought put.", risk: "Limited both ways.", ew: "After a long wave 3 or 5, ahead of a correction.", an: "A seat belt and speed limiter together.", data: "Not tested." },
+  { id: "risk-reversal", n: "Risk reversal", f: "Bullish", legs: [["P", "d", 0.25, -1], ["C", "d", 0.25, 1]], use: "Strongly bullish while puts are rich.", avoid: "Before binary events.", how: "Sell an expensive put to buy a call: a cheap synthetic long.", risk: "Large below the put strike.", ew: "A confirmed wave-2 low, with the put strike above invalidation.", an: "Selling insurance to fund a lottery ticket on the same street.", data: "NIFTY's skew (rich puts, cheap near calls) is exactly what this structure uses." },
+  { id: "jade-lizard", n: "Jade lizard", f: "Neutral", legs: [["P", "d", 0.25, -1], ["C", "d", 0.20, -1], ["C", "d", 0.10, 1]], use: "Neutral to bullish, IV high.", avoid: "Sharp falls.", how: "A short put plus a call spread. If the credit exceeds the call spread width, there is no upside risk.", risk: "Large below the put strike.", ew: "Wave 4 holding above the wave-1 high.", an: "A shop that sells insurance on two streets but caps one of them.", data: "Not tested." },
+  { id: "hedged-strangle", n: "Hedged strangle (core)", f: "Neutral", legs: [["C", "d", 0.16, -1], ["P", "d", 0.16, -1], ["F", "hedge", 0, 0]], use: "Each month when IV is above 20-day realised; hedge delta daily at the close.", avoid: "With fewer than 5 lots, or acting a day late.", how: "Sell the volatility premium and remove the directional bet with futures.", risk: "Overnight gaps and volatility spikes.", ew: "Any wave: the hedge makes direction irrelevant; wave 4 and B ranges are kindest.", an: "An insurer that buys reinsurance every evening.", data: "2008–26: Sharpe 1.12 and 0.95 in the two halves, ~8% a year at 10% volatility, max drawdown −12%. Flat in 2023–26." }
+];
+const FAMS = ["All", "Bullish", "Bearish", "Neutral", "Big move", "Hedge"];
+let lab = { ix: "NIFTY", strat: "short-strangle", legs: [], fam: "All" };
+function strikeFor(S, T, atm, type, target, step) {
+  let best = null, bd = 9; const a = Math.round(S / step) * step;
+  for (let k = a - step * 200; k <= a + step * 200; k += step) { if (k <= 0) continue; const d = Math.abs(bs(S, k, T, ivAt(k, S, atm), type).delta); if ((type === "C" && k >= a) || (type === "P" && k <= a) || target >= 0.5) { const e = Math.abs(d - target); if (e < bd) { bd = e; best = k; } } }
+  return best || a;
+}
+function buildLegs() {
+  const P = IDX[lab.ix]; const S = +$("#lab-s").value || P.spot, v = (+$("#lab-v").value) / 100, D = +$("#lab-d").value;
+  const st = STRATS.find(s => s.id === lab.strat); const atmK = Math.round(S / P.step) * P.step;
+  lab.legs = st.legs.map(([t, how, val, q, dte]) => {
+    const dd = dte || D, T = dd / 365;
+    if (t === "F") return { t, K: 0, q, dte: dd, hedge: how === "hedge" };
+    let K = atmK;
+    if (how === "d") K = strikeFor(S, T, v, t, val, P.step);
+    else if (how === "off") K = Math.round((S * (1 + val / 100)) / P.step) * P.step;
+    return { t, K, q, dte: dd };
+  });
+  const seen = {}; lab.legs.forEach(l => { if (l.t === "F") return; const key = l.t + l.K; if (seen[key] != null && Math.sign(seen[key]) !== Math.sign(l.q)) l.K += (l.t === "C" ? 1 : -1) * P.step; seen[l.t + l.K] = l.q; });
+}
+function legValue(l, x, tEval, S0, v) {
+  const P = IDX[lab.ix];
+  if (l.t === "F") { const F0 = S0 * Math.exp((R - Q) * l.dte / 365); return x * Math.exp((R - Q) * Math.max(l.dte - tEval, 0) / 365) - F0; }
+  const rem = (l.dte - tEval) / 365; const iv = ivAt(l.K, S0, v);
+  return rem <= 1e-6 ? (l.t === "C" ? Math.max(x - l.K, 0) : Math.max(l.K - x, 0)) : bs(x, l.K, rem, iv, l.t).price;
+}
+function renderLab() {
+  const P = IDX[lab.ix]; const S = +$("#lab-s").value || P.spot, v = (+$("#lab-v").value) / 100, D = +$("#lab-d").value, lots = Math.max(1, +$("#lab-n").value || 1), lot = P.lot * lots;
+  $("#lab-so").textContent = fmtInt(S); $("#lab-vo").textContent = (v * 100).toFixed(1) + "%"; $("#lab-do").textContent = D + " d";
+  const st = STRATS.find(s => s.id === lab.strat);
+  // entry prices
+  lab.legs.forEach(l => { l.px = l.t === "F" ? 0 : bs(S, l.K, l.dte / 365, ivAt(l.K, S, v), l.t).price; });
+  const hedgeLeg = lab.legs.find(l => l.hedge);
+  if (hedgeLeg) { let d = 0; lab.legs.forEach(l => { if (l.t !== "F") d += l.q * bs(S, l.K, l.dte / 365, ivAt(l.K, S, v), l.t).delta; }); hedgeLeg.q = +(-d).toFixed(2); }
+  const tEval = Math.min(...lab.legs.filter(l => l.t !== "F").map(l => l.dte));
+  const tShort = Math.max(tEval, 1) / 365;
+  const span = clamp(2.6 * v * Math.sqrt(tShort), 0.06, 0.3);
+  const xs = []; for (let i = 0; i <= 240; i++) xs.push(S * (1 - span + 2 * span * i / 240));
+  const pnlAt = (x, t) => lab.legs.reduce((a, l) => a + l.q * (legValue(l, x, t, S, v) - l.px) * lot, 0);
+  const exp = xs.map(x => pnlAt(x, tEval)), today = xs.map(x => pnlAt(x, 0));
+  const bes = []; for (let i = 1; i < xs.length; i++) if ((exp[i - 1] < 0) !== (exp[i] < 0)) { const f = exp[i - 1] / (exp[i - 1] - exp[i]); bes.push(xs[i - 1] + f * (xs[i] - xs[i - 1])); }
+  const sd = S * v * Math.sqrt(tShort);
+  payoffChart($("#lab-chart"), { xs, exp, today, spot: S, band: [S - sd, S + sd], bes, label: st.n + " payoff" });
+  // wide grid for max profit/loss and tails
+  const wide = []; for (let i = 0; i <= 600; i++) wide.push(S * (0.4 + 1.2 * i / 600));
+  const we = wide.map(x => pnlAt(x, tEval));
+  const slopeR = (we[600] - we[599]), slopeL = (we[1] - we[0]);
+  const maxP = Math.max(...we), maxL = Math.min(...we);
+  const net = lab.legs.reduce((a, l) => a - l.q * l.px * lot, 0);
+  // probability of profit at the first expiry (lognormal, ATM IV)
+  let pop = 0; const z = x => (Math.log(x / S) - (R - Q - v * v / 2) * tShort) / (v * Math.sqrt(tShort));
+  for (let i = 1; i < wide.length; i++) if ((we[i] + we[i - 1]) / 2 > 0) pop += Ncdf(z(wide[i])) - Ncdf(z(wide[i - 1]));
+  // greeks
+  let gd = 0, gt = 0, gv = 0; lab.legs.forEach(l => { if (l.t === "F") { gd += l.q; return; } const g = bs(S, l.K, l.dte / 365, ivAt(l.K, S, v), l.t); gd += l.q * g.delta; gt += l.q * g.theta; gv += l.q * g.vega; });
+  // rough margin
+  const notional = S * P.lot * lots; const shorts = lab.legs.filter(l => l.t !== "F" && l.q < 0).reduce((a, l) => a - l.q, 0);
+  const nc = -lab.legs.filter(l => l.t === "C").reduce((a, l) => a + l.q, 0) - lab.legs.filter(l => l.t === "F").reduce((a, l) => a + Math.min(l.q, 0), 0);
+  const np = -lab.legs.filter(l => l.t === "P").reduce((a, l) => a + l.q, 0);
+  const unlimitedUp = slopeR < -1e-6, bigDown = slopeL > 1e-6 && maxL === we[0];
+  let margin;
+  if (shorts === 0 && !lab.legs.some(l => l.t === "F")) margin = Math.max(-net, 0);
+  else if (!unlimitedUp && !bigDown) margin = Math.max(-maxL, 0) + 0.02 * notional * shorts;
+  else margin = 0.075 * notional * Math.max(nc, np, 1) + 0.02 * notional * shorts;
+  const fmtMax = (val, unl) => unl ? "Unlimited" : inr(val);
+  $("#lab-stats").innerHTML =
+    stat(net >= 0 ? "Net credit" : "Net debit", inr(Math.abs(net)), net >= 0 ? "pos" : "") +
+    stat("Max profit", slopeR > 1e-6 && maxP === we[600] ? "Unlimited" : inr(maxP), "pos") +
+    stat("Max loss", unlimitedUp ? "Unlimited" : bigDown ? "Large (to zero)" : inr(maxL), "neg") +
+    stat("Breakevens", bes.length ? bes.map(b => fmtInt(b)).join(" · ") : "None in range") +
+    stat("Chance of profit", (pop * 100).toFixed(0) + "%") +
+    stat("Delta (index units)", (gd * lots).toFixed(2) + " lot" + (Math.abs(gd * lots) === 1 ? "" : "s")) +
+    stat("Theta per day", inr(gt * lot), gt >= 0 ? "pos" : "neg") +
+    stat("Vega per IV point", inr(gv * lot)) +
+    stat("Margin (rough)", inr(margin));
+  // legs table
+  const tb = $("#lab-legs"); tb.innerHTML = "<tr><th>Side</th><th>Qty</th><th>Leg</th><th>Strike</th><th>Days</th><th>Price</th></tr>";
+  lab.legs.forEach((l, i) => {
+    const tr = document.createElement("tr");
+    const side = l.q > 0 ? "buy" : l.q < 0 ? "sell" : "buy";
+    tr.innerHTML = `<td><button class="side ${side}" data-i="${i}" data-a="flip">${l.q > 0 ? "Buy" : l.q < 0 ? "Sell" : "—"}</button></td><td class="mono">${Math.abs(l.q)}</td><td>${l.t === "F" ? (l.hedge ? "Futures hedge" : "Futures") : l.t === "C" ? "Call" : "Put"}</td>` +
+      (l.t === "F" ? `<td class="mono">—</td>` : `<td><button class="step" data-i="${i}" data-a="dn" aria-label="Lower strike">−</button> <span class="mono">${fmtInt(l.K)}</span> <button class="step" data-i="${i}" data-a="up" aria-label="Higher strike">+</button></td>`) +
+      `<td class="mono">${l.dte}</td><td class="mono">${l.t === "F" ? "—" : l.px.toFixed(1)}</td>`;
+    tb.appendChild(tr);
+  });
+  // info card
+  $("#lab-info").innerHTML = `<h4 style="margin-top:14px">${st.n} <span class="fam">${st.f}</span></h4><dl><dt>Use when</dt><dd>${st.use}</dd><dt>Avoid when</dt><dd>${st.avoid}</dd><dt>How it makes money</dt><dd>${st.how}</dd><dt>Main risk</dt><dd>${st.risk}</dd><dt>Elliott Wave fit</dt><dd>${st.ew}</dd><dt>Analogy</dt><dd>${st.an}</dd><dt>Our data</dt><dd>${st.data}</dd></dl>`;
+  $("#lab-sub").textContent = `${lab.ix === "NIFTY" ? "NIFTY" : "Bank Nifty"} · lot ${P.lot} · ${lots} lot${lots > 1 ? "s" : ""}`;
+}
+function renderCards() {
+  const fb = $("#lab-fams"); fb.innerHTML = "";
+  FAMS.forEach(f => { const b = document.createElement("button"); b.className = "chip"; b.textContent = f; b.setAttribute("aria-pressed", lab.fam === f ? "true" : "false"); b.onclick = () => { lab.fam = f; renderCards(); }; fb.appendChild(b); });
+  const box = $("#lab-cards"); box.innerHTML = "";
+  STRATS.filter(s => lab.fam === "All" || s.f === lab.fam).forEach(s => {
+    const b = document.createElement("button"); b.className = "scard"; b.setAttribute("aria-pressed", s.id === lab.strat ? "true" : "false");
+    b.innerHTML = `<span class="fam">${s.f}</span><b>${s.n}</b><small>${s.use}</small>`;
+    b.onclick = () => { openStrategy(s.id, false); }; box.appendChild(b);
+  });
+}
+function openStrategy(id, scroll) { lab.strat = id; buildLegs(); renderCards(); renderLab(); if (scroll) $("#lab-chart").scrollIntoView({ block: "center" }); }
+(function () {
+  segBind("lab-ix", v => { lab.ix = v; $("#lab-s").value = IDX[v].spot; $("#lab-s").step = IDX[v].step; $("#lab-v").value = IDX[v].iv; buildLegs(); renderLab(); });
+  ["lab-s", "lab-v", "lab-d"].forEach(id => $("#" + id).addEventListener("input", () => { buildLegs(); renderLab(); }));
+  $("#lab-n").addEventListener("input", renderLab);
+  $("#lab-reset").onclick = () => { buildLegs(); renderLab(); };
+  $("#lab-legs").addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return; const l = lab.legs[+b.dataset.i]; const step = IDX[lab.ix].step;
+    if (b.dataset.a === "up") l.K += step; else if (b.dataset.a === "dn") l.K = Math.max(step, l.K - step); else if (b.dataset.a === "flip" && !l.hedge) l.q = -l.q;
+    renderLab();
+  });
+  onRoute("strategies", () => { if (!lab.legs.length) buildLegs(); renderCards(); renderLab(); });
+})();
+
+/* ---------- 7: regimes ---------- */
+const MATRIX = {
+  up: { low: [["long-call", "bull-call", "call-back"], "Options are cheap, so own convexity. Spreads cut the cost of being early.", "Early wave 3 after a wave-2 low; the first leg of wave 1."],
+        normal: [["bull-call", "bull-put", "risk-reversal"], "Pay for upside with a sold leg, or sell puts below support.", "Wave 3 in progress; wave 5 with care."],
+        high: [["bull-put", "short-put", "risk-reversal"], "Puts are rich after a fall. Sell them with protection below the invalidation level.", "The end of wave 2 or wave C: sell the fear."] },
+  side: { low: [["long-fly", "calendar", "iron-condor"], "Premium is thin. Cheap structures that profit from a pin, or wait.", "A quiet wave 4 or B; triangle building."],
+          normal: [["iron-condor", "hedged-strangle", "jade-lizard"], "Sell the range with defined risk, or the hedged strangle if IV is above realised.", "Wave 4 and B ranges; alternation tells you whether 4 will be flat."],
+          high: [["hedged-strangle", "iron-condor", "short-straddle"], "Rich premium and no direction: the classic sell, hedged daily or with wings.", "Wave 4 or B after a sharp move; VIX elevated."] },
+  down: { low: [["long-put", "bear-put", "put-back"], "Insurance is cheap. Buy it, or use spreads to cut the cost.", "Late wave 5 or the first leg of wave A."],
+          normal: [["bear-put", "bear-call", "collar"], "Spreads in the direction of the fall; sell calls into rallies.", "Wave B rallies; the middle of wave C."],
+          high: [["bear-call", "bear-put", "bull-put"], "Puts are expensive. Use spreads, sell call spreads into bounces, and look to sell puts near the end of C.", "Wave C in full panic; watch for C = A or 1.618 × A."] },
+  move: { low: [["long-straddle", "long-strangle", "call-back"], "Cheap options and a big move expected: own both sides.", "Before the thrust out of a triangle; late wave 5."],
+          normal: [["long-strangle", "long-straddle", "put-back"], "Only if your expected move beats the price.", "Ahead of an event that ends a wave."],
+          high: [["iron-condor", "bear-call", "bull-put"], "A big move is already priced. Usually better to sell after the event once IV falls.", "Event-driven waves: the move often comes, then reverses."] }
+};
+const DIRL = { up: "Uptrend", side: "Sideways", down: "Downtrend", move: "Big move" };
+const VOLL = { low: "Low IV", normal: "Normal IV", high: "High IV" };
+(function () {
+  function grid() {
+    const m = $("#rg-matrix"); m.innerHTML = '<div class="h"></div>' + ["low", "normal", "high"].map(v => `<div class="h">${VOLL[v]}</div>`).join("");
+    ["up", "side", "down", "move"].forEach(d => {
+      const h = document.createElement("div"); h.className = "h"; h.textContent = DIRL[d]; m.appendChild(h);
+      ["low", "normal", "high"].forEach(v => { const cell = MATRIX[d][v]; const b = document.createElement("button"); b.className = "mcell"; b.setAttribute("aria-pressed", "false"); b.innerHTML = `<b>${cell[0].map(id => STRATS.find(s => s.id === id).n).join(", ")}</b><span>${cell[1]}</span>`; b.onclick = () => { $$(".mcell", m).forEach(x => x.setAttribute("aria-pressed", x === b ? "true" : "false")); detail(d, v); }; m.appendChild(b); });
+    });
+  }
+  function detail(d, v) {
+    const cell = MATRIX[d][v];
+    $("#rg-detail").innerHTML = `<h4>${DIRL[d]} · ${VOLL[v]}</h4><p>${cell[1]}</p><p><span class="pill wv">Elliott Wave</span> ${cell[2]}</p><div class="chips">${cell[0].map(id => `<button class="chip" data-open="${id}">Open ${STRATS.find(s => s.id === id).n} in the lab</button>`).join("")}</div>`;
+  }
+  document.addEventListener("click", e => { const b = e.target.closest("[data-open]"); if (!b) return; location.hash = "strategies"; setTimeout(() => openStrategy(b.dataset.open, true), 80); });
+  const dir = segBind("pk-dir", pick), vol = segBind("pk-vol", pick), risk = segBind("pk-risk", pick);
+  function pick() {
+    const d = dir(), v = vol(), r = risk(); let ids = MATRIX[d][v][0].slice();
+    if (r === "defined") ids = ids.filter(id => !["short-put", "short-call", "short-straddle", "hedged-strangle"].includes(id)).concat(d === "side" ? ["iron-condor", "iron-fly"] : d === "up" ? ["bull-call", "bull-put"] : d === "down" ? ["bear-put", "bear-call"] : ["long-straddle"]);
+    else if (d === "side" || (v === "high" && d !== "move")) ids = ["hedged-strangle"].concat(ids);
+    ids = [...new Set(ids)].slice(0, 3);
+    $("#pk-out").innerHTML = `<p class="small">${MATRIX[d][v][1]}</p><div class="card-grid">${ids.map(id => { const s = STRATS.find(x => x.id === id); return `<button class="scard" data-open="${id}"><span class="fam">${s.f}</span><b>${s.n}</b><small>${s.how}</small><small><b style="font-family:var(--f-body);font-size:.8rem">Our data:</b> ${s.data}</small></button>`; }).join("")}</div>`;
+  }
+  onRoute("regimes", () => { grid(); detail("side", "high"); pick(); });
+})();
+
+/* ---------- 8: Elliott Wave ---------- */
+const WAVES = [
+  { k: "1", t: "Wave 1: the first push", feel: "Disbelief. Most still think it is a bounce in a bear market; short covering drives it.", vol: "Often still high from the prior decline, starting to ease.", plays: "Small long calls or bull call spreads; or sell put spreads with the long put below the wave-1 start.", strikes: "Invalidation for the new uptrend: below the wave-1 start.", an: "The first rain after a drought: few believe the season has changed." },
+  { k: "2", t: "Wave 2: the test", feel: "Fear returns. 'The bear is back.' Often a deep retracement of 50–61.8%.", vol: "Rises again as the market falls.", plays: "Sell bull put spreads near the 61.8–78.6% zone with the long put below the wave-1 start; buy calls only after the low holds.", strikes: "Rule: wave 2 cannot go below the start of wave 1. Put your protection there.", an: "A storm returning just after you planted seeds; the seeds survive if the field does not flood." },
+  { k: "3", t: "Wave 3: the strong trend", feel: "Recognition. News turns good, breadth expands, every dip is bought.", vol: "Falls: in India spot and VIX move in opposite directions.", plays: "Long calls or bull call spreads toward 1.618 × wave 1; bull put spreads on dips. Avoid naked short calls. Hedged sellers re-hedge often.", strikes: "Invalidation: below the wave-2 low.", an: "The monsoon proper: steady rain that nobody doubts any more." },
+  { k: "4", t: "Wave 4: the frustrating pause", feel: "Sideways and choppy. Shallower than wave 2 if 2 was sharp (alternation).", vol: "Low to moderate and decaying.", plays: "Iron condors or hedged strangles; calendars; butterflies aimed at the 38.2% retracement.", strikes: "Rule: wave 4 cannot enter wave 1's territory. Short put strikes above the wave-1 high.", an: "A long lunch break in a Test match: the score barely moves while the clock runs." },
+  { k: "5", t: "Wave 5: the last push", feel: "Euphoria and complacency. Momentum and breadth diverge from price.", vol: "Very low: insurance is cheap.", plays: "Protective puts or put spreads; covered calls; bear call spreads above the wave-5 targets; long straddles if IV is extremely low.", strikes: "Targets: wave 5 = wave 1, or 0.618 × the distance from the start of 1 to the end of 3.", an: "The party at its loudest just before the music stops." },
+  { k: "A", t: "Wave A: the first crack", feel: "'Just a dip.' Most see it as a buying opportunity.", vol: "Jumps from very low levels.", plays: "Put spreads; stop selling naked puts; take profits on calls.", strikes: "Above the wave-5 high, the bearish case is wrong.", an: "The first crack in a dam that everyone says is fine." },
+  { k: "B", t: "Wave B: the relief rally", feel: "Hope. A 'sucker rally' that may retest the high in a flat.", vol: "Eases, making calls cheaper and puts less rich.", plays: "Bear call spreads into resistance; take profits on puts; iron condors if B turns into a triangle.", strikes: "In a zigzag, B stays below the wave-5 high.", an: "The calm in the eye of the storm." },
+  { k: "C", t: "Wave C: the decline that hurts", feel: "Panic and capitulation. Often C = A, or 1.618 × A.", vol: "Peaks. The volatility premium is at its largest.", plays: "Long puts early in C. Near the target zone, sell put spreads or hedged strangles: our data's richest premium came after spikes.", strikes: "Anchor protection below the C = 1.618 × A extension.", an: "Flood season: insurance quotes are highest exactly when the water peaks." }
+];
+const VIXMOOD = [70, 52, 66, 38, 46, 20, 62, 45, 86];
+let ewSel = 3;
+(function () {
+  function draw() {
+    const host = $("#ew-chart"); const c = frame(host, { xmin: -0.3, xmax: 8.4, ymin: -42, ymax: 115, noX: true, noY: true, h: 320, padL: 8, padR: 8, label: "Elliott Wave cycle with a volatility mood line" });
+    const vy = v => c.sy(-40 + v * 0.36);
+    el("line", { x1: c.m.l, x2: c.W - c.m.r, y1: c.sy(-3), y2: c.sy(-3), class: "gridline" }, c.g);
+    const vl = el("text", { x: c.m.l + 4, y: c.sy(-36), class: "tick" }, c.g); vl.textContent = "India VIX mood";
+    el("path", { d: pathD(VIXMOOD.map((v, i) => [c.sx(i), vy(v)])), class: "vix" }, c.g);
+    for (let i = 1; i < WAVE_PTS.length; i++) {
+      const seg = [WAVE_PTS[i - 1], WAVE_PTS[i]].map(p => [c.sx(p[0]), c.sy(p[1])]);
+      el("path", { d: pathD(seg), class: i === ewSel ? "wave-on" : "wave" }, c.g);
+      const hit = el("path", { d: pathD(seg), class: "wave-hit", tabindex: "0", role: "button", "aria-label": "Wave " + WAVE_LAB[i] }, c.g);
+      hit.addEventListener("click", () => { ewSel = i; draw(); });
+      hit.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); ewSel = i; draw(); } });
+    }
+    for (let i = 1; i < WAVE_PTS.length; i++) {
+      const p = WAVE_PTS[i], up = p[1] > WAVE_PTS[i - 1][1], y = c.sy(p[1]) + (up ? -17 : 19);
+      const ci = el("circle", { cx: c.sx(p[0]), cy: y, r: 13, class: "wcirc" + (i === ewSel ? " on" : "") }, c.g);
+      const t = el("text", { x: c.sx(p[0]), y: y + 5, class: "wlab" + (i === ewSel ? " on" : ""), "text-anchor": "middle" }, c.g); t.textContent = WAVE_LAB[i];
+      [ci, t].forEach(n => n.addEventListener("click", () => { ewSel = i; draw(); }));
+    }
+    const w = WAVES[ewSel - 1];
+    $("#ew-detail").innerHTML = `<h4>${w.t}</h4><div class="wavecard"><div><h5>Crowd mood</h5>${w.feel}</div><div><h5>Volatility</h5>${w.vol}</div><div><h5>Option plays</h5>${w.plays}</div><div><h5>Strike anchors</h5>${w.strikes}</div></div><p class="small" style="margin-top:10px"><span class="pill wv">Analogy</span> ${w.an}</p><p class="small">These pairings are practitioner heuristics, not tested rules.</p>`;
+  }
+  ["fb-0", "fb-1", "fb-2", "fb-step"].forEach(id => $("#" + id).addEventListener("input", fib));
+  function fib() {
+    const a = +$("#fb-0").value, b = +$("#fb-1").value, step = +$("#fb-step").value; const len = b - a; const r = x => Math.round(x / step) * step;
+    if (!(a > 0 && b > 0) || Math.abs(len) < step) { $("#fb-out").innerHTML = '<p class="small">Enter a wave-1 start and end at least one strike step apart.</p>'; return; }
+    const up = len > 0; const sgn = up ? 1 : -1; const w2in = +$("#fb-2").value;
+    const w2 = w2in > 0 ? w2in : b - 0.618 * len;
+    const w2bad = up ? w2 <= a : w2 >= a;
+    const w3a = w2 + 1.618 * len, w3b = w2 + 2.618 * len; const w3len = w3a - w2;
+    const w4 = w3a - 0.382 * w3len; const w5a = w4 + len, w5b = w4 + 0.618 * (w3a - a);
+    const row = (lvl, val, note) => `<tr><td>${lvl}</td><td class="num mono">${fmtInt(val)}</td><td>${note}</td></tr>`;
+    $("#fb-out").innerHTML = (w2bad ? `<div class="callout warn"><span class="lab">Count broken</span><p>Wave 2 at ${fmtInt(w2)} retraces more than 100% of wave 1. By the rules this cannot be wave 2: relabel the swing.</p></div>` : "") +
+      `<table class="t"><tr><th>Level</th><th class="num">Price</th><th>Use with options</th></tr>` +
+      row("Wave 2 zone: 50%", b - 0.5 * len, "Start scaling into the bullish idea") +
+      row("Wave 2 zone: 61.8%", b - 0.618 * len, "Common wave-2 end; short put strike for a put spread") +
+      row("Wave 2 zone: 78.6%", b - 0.786 * len, "Deep but still valid") +
+      row("Invalidation (wave-1 start)", a, "Long (protective) put strike of the spread") +
+      row("Wave 3 target: 1.618 × wave 1", w3a, "Short strike of a bull call spread") +
+      row("Wave 3 extension: 2.618 × wave 1", w3b, "Where extended third waves often stop") +
+      row("Wave 4 zone: 38.2% of wave 3", w4, "Short put strikes of a wave-4 iron condor stay above the wave-1 end") +
+      row("Wave 4 rule line (wave-1 end)", b, "Must hold, or it is not wave 4") +
+      row("Wave 5 = wave 1", w5a, "Short strike of bear call spreads, or where to buy protection") +
+      row("Wave 5 = 0.618 × (1 → 3)", w5b, "Alternate wave-5 target") + `</table>` +
+      `<h4 style="margin-top:12px">Defined-risk ideas from these levels (${up ? "bullish" : "bearish"} count)</h4><ul class="tight">` +
+      `<li><b>During wave 2:</b> ${up ? "sell the " + fmtInt(r(b - 0.618 * len)) + " put, buy the " + fmtInt(r(a) - sgn * step) + " put" : "sell the " + fmtInt(r(b - 0.618 * len)) + " call, buy the " + fmtInt(r(a) - sgn * step) + " call"}: the spread's worst case sits just beyond invalidation.</li>` +
+      `<li><b>Early wave 3:</b> ${up ? "buy the " + fmtInt(r(w2)) + " call, sell the " + fmtInt(r(w3a)) + " call" : "buy the " + fmtInt(r(w2)) + " put, sell the " + fmtInt(r(w3a)) + " put"} (a ${up ? "bull call" : "bear put"} spread to the 1.618 target).</li>` +
+      `<li><b>Wave 4:</b> an iron condor with short strikes around ${fmtInt(r(w4))} and ${fmtInt(r(w3a))}, wings one strike beyond each.</li>` +
+      `<li><b>Wave 5 near ${fmtInt(r(w5a))}:</b> ${up ? "buy put spreads or protective puts while IV is low; sell call spreads above the target" : "buy call spreads as protection; sell put spreads below the target"}.</li></ul>`;
+  }
+  onRoute("elliott", draw); onRoute("elliott", fib);
+})();
+
+/* ---------- 9: position sizer ---------- */
+(function () {
+  const P = [["Hedged strangle (NIFTY)", 97500, 195000, 4], ["Iron condor, 300-pt wings", 13650, 78000, 2], ["Bull put spread, 200-pt wide", 9100, 45000, 2], ["Long call (premium ₹15k)", 15000, 15000, 2]];
+  const box = $("#sz-presets");
+  P.forEach((p, i) => { const b = document.createElement("button"); b.className = "chip"; b.textContent = p[0]; b.setAttribute("aria-pressed", i === 0 ? "true" : "false"); b.onclick = () => { $$(".chip", box).forEach(x => x.setAttribute("aria-pressed", x === b ? "true" : "false")); $("#sz-loss").value = p[1]; $("#sz-mg").value = p[2]; $("#sz-risk").value = p[3]; calc(); }; box.appendChild(b); });
+  ["sz-cap", "sz-risk", "sz-loss", "sz-mg", "sz-mx"].forEach(id => $("#" + id).addEventListener("input", calc));
+  function calc() {
+    const cap = +$("#sz-cap").value || 0, rk = (+$("#sz-risk").value || 0) / 100, loss = Math.max(1, +$("#sz-loss").value || 1), mg = Math.max(1, +$("#sz-mg").value || 1), mx = (+$("#sz-mx").value || 0) / 100;
+    const byRisk = Math.floor(cap * rk / loss), byMargin = Math.floor(cap * mx / mg), lots = Math.max(0, Math.min(byRisk, byMargin));
+    $("#sz-stats").innerHTML = stat("Lots by risk limit", byRisk) + stat("Lots by margin limit", byMargin) + stat("Lots to trade", lots, lots ? "pos" : "neg") + stat("Margin used", inr(lots * mg) + " · " + (cap ? (lots * mg / cap * 100).toFixed(0) : 0) + "%") + stat("Worst-case loss", inr(-lots * loss) + " · " + (cap ? (lots * loss / cap * 100).toFixed(1) : 0) + "%");
+  }
+  onRoute("risk", calc);
+})();
+
+/* ---------- 10: hedge ladder ---------- */
+(function () {
+  const KC = 23850, KP = 21750, V0 = 0.16;
+  ["hl-s", "hl-d", "hl-n"].forEach(id => $("#" + id).addEventListener("input", draw));
+  const dpl = (S, d) => -bs(S, KC, d / 365, ivAt(KC, 22753, V0), "C").delta - bs(S, KP, d / 365, ivAt(KP, 22753, V0), "P").delta;
+  function draw() {
+    const S = +$("#hl-s").value, D = +$("#hl-d").value, N = Math.max(1, +$("#hl-n").value || 1);
+    $("#hl-so").textContent = fmtInt(S); $("#hl-do").textContent = D + " d";
+    const d = dpl(S, D), fut = Math.round(-d * N);
+    const c = bs(S, KC, D / 365, ivAt(KC, 22753, V0), "C").price, p = bs(S, KP, D / 365, ivAt(KP, 22753, V0), "P").price;
+    const optPnl = (71.55 + 108.8 - c - p) * 65 * N;
+    $("#hl-stats").innerHTML = stat("Delta per strangle lot", d.toFixed(2)) + stat("Book delta", (d * N).toFixed(2) + " lots") + stat("Futures to hold", (fut > 0 ? "+" : "") + fut + " lots") + stat("Options P&L at this level", inr(optPnl), optPnl >= 0 ? "pos" : "neg");
+    const xs = []; for (let x = 20800; x <= 26000; x += 25) xs.push(x);
+    const ys = xs.map(x => Math.round(-dpl(x, D) * N)); const lo = Math.min(...ys, -1), hi = Math.max(...ys, 1);
+    const host = $("#hl-chart"); const ch = frame(host, { xmin: 20800, xmax: 26000, ymin: lo - 0.5, ymax: hi + 0.5, yfmt: v => (v > 0 ? "+" : "") + v, yticks: niceTicks(lo, hi, 6).filter(t => Number.isInteger(t)), xfmt: v => fmtInt(v), h: 240, nx: host.clientWidth < 500 ? 4 : 6, label: "Futures lots to hold by NIFTY level" });
+    let dpath = ""; xs.forEach((x, i) => { const px = ch.sx(x), py = ch.sy(ys[i]); dpath += i ? `H${px.toFixed(1)}V${py.toFixed(1)}` : `M${px.toFixed(1)},${py.toFixed(1)}`; });
+    el("path", { d: dpath, class: "l1" }, ch.g);
+    [KP, KC].forEach(k => { el("line", { x1: ch.sx(k), x2: ch.sx(k), y1: ch.m.t, y2: ch.H - ch.m.b, class: "gridline" }, ch.g); const t = el("text", { x: ch.sx(k) + 4, y: ch.m.t + 11, class: "lbl" }, ch.g); t.textContent = (k === KC ? "Call " : "Put ") + fmtInt(k); });
+    el("circle", { cx: ch.sx(S), cy: ch.sy(fut), r: 6, class: "dotk" }, ch.g);
+    hover(ch, host, xv => { const x = Math.round(xv / 25) * 25; const i = xs.indexOf(x); if (i < 0) return null; return { x, html: `NIFTY <b>${fmtInt(x)}</b><br>Hold <b>${ys[i] > 0 ? "+" : ""}${ys[i]}</b> futures lots` }; });
+  }
+  onRoute("playbook", draw);
+})();
+
+/* ---------- quizzes ---------- */
+const QUIZ = {
+  basics: [
+    ["A call option gives its buyer…", ["the obligation to buy at the strike", "the right to buy at the strike at expiry", "the right to sell at the strike", "a share of NIFTY's dividends"], 1, "Calls are rights to buy. The seller carries the obligation."],
+    ["You buy one NIFTY 25,500 put for ₹90 (lot 65). NIFTY settles at 25,300. Your profit?", ["₹5,850", "₹7,150", "₹13,000", "₹1,300"], 1, "Intrinsic value is 200 points; minus the 90 paid is 110 × 65 = ₹7,150."],
+    ["NIFTY is at 25,800. Which option is in the money?", ["25,900 call", "25,700 put", "25,600 call", "26,000 call"], 2, "A call is in the money when spot is above its strike: 25,800 > 25,600."],
+    ["NSE index options such as NIFTY are…", ["American style, physically settled", "European style, cash settled", "American style, cash settled", "European style, physically settled"], 1, "They are exercised only at expiry and settled in cash."]
+  ],
+  pricing: [
+    ["Implied volatility rises from 13% to 17%, nothing else changes. What happens?", ["Calls rise, puts fall", "Calls and puts both get dearer", "Both get cheaper", "Only far options change"], 1, "Higher expected swings make both the right to buy and the right to sell more valuable."],
+    ["An option costs ₹150 and has ₹40 of intrinsic value. Its time value is…", ["₹190", "₹110", "₹40", "₹150"], 1, "Time value = premium − intrinsic value."],
+    ["Time decay of an at-the-money option is fastest…", ["just after listing", "at an even rate every day", "in the last days before expiry", "only at weekends"], 2, "Time value shrinks roughly with the square root of time left, so the melt speeds up near expiry."],
+    ["Put-call parity says call − put equals…", ["zero", "the discounted (forward − strike)", "the strike", "the theta"], 1, "That is why call − put behaves like a futures position."]
+  ],
+  greeks: [
+    ["A call has delta 0.30. NIFTY rises 100 points. The call gains about…", ["100 points", "30 points", "3 points", "0.3 points"], 1, "Delta × index move = 0.30 × 100."],
+    ["Which Greek is largest for an at-the-money option one day before expiry?", ["Vega", "Rho", "Gamma", "None"], 2, "Gamma peaks at the money near expiry: delta can jump from 0 to 1 in a small move."],
+    ["Your short strangle on 10 lots has delta −0.4 per lot. To flatten it you…", ["sell 4 futures lots", "buy 4 futures lots", "buy 40 lots", "do nothing"], 1, "Book delta is −4, so you need +4: buy 4 NIFTY futures lots."],
+    ["A position that earns time decay (positive theta) usually has…", ["positive gamma", "negative gamma", "zero vega", "no delta"], 1, "For the same expiry you cannot be paid theta and also own gamma."]
+  ],
+  volatility: [
+    ["India VIX is 16. NIFTY's typical daily move is about…", ["16%", "1%", "4%", "0.16%"], 1, "16 ÷ √252 ≈ 1%."],
+    ["NIFTY 25,000, IV 15%, 30 days. The one-standard-deviation move is about…", ["±375", "±1,075", "±3,750", "±150"], 1, "25,000 × 0.15 × √(30/365) ≈ 1,075."],
+    ["In our 2008–26 data, the volatility premium was largest when…", ["IV was lowest", "IV was highest", "on expiry days", "in Budget weeks"], 1, "Top-fifth IV levels carried +5.4 points against +0.8 in the bottom fifth."],
+    ["NIFTY's skew means…", ["calls cost more than puts at equal distance", "out-of-the-money puts carry higher IV than at-the-money", "every strike has the same IV", "skew exists only in Bank Nifty"], 1, "Investors pay up for crash insurance, so far puts trade at higher implied volatility."]
+  ],
+  edge: [
+    ["Wins 97% of trades, +0.9% per win, −13.6% per loss. Expectancy per trade?", ["+0.5%", "+0.9%", "−13%", "+12%"], 0, "0.97 × 0.9 − 0.03 × 13.6 ≈ +0.47%. Positive but fragile: one bad streak dominates."],
+    ["SEBI's FY26 study: what share of individual F&O traders lost money?", ["About 55%", "About 70%", "About 88%", "About 98%"], 2, "87.7% lost money in FY26."],
+    ["In late 2026, STT on options is charged on…", ["premium bought", "premium sold, at 0.15%", "the full contract value", "profits only"], 1, "0.15% of the premium sold, plus 0.15% of intrinsic value on exercised long options."],
+    ["The unhedged strangle won 78% of trades yet lost money because…", ["costs were too high", "a few losses were far larger than the many wins", "wins were miscounted", "it traded too rarely"], 1, "Average win +14.7% of margin, average loss −56.1%, worst −312%."]
+  ],
+  strategies: [
+    ["Which structure has limited risk on both sides?", ["Short strangle", "Iron condor", "Short straddle", "Short call"], 1, "The long wings cap the loss on each side."],
+    ["A bull put spread profits most when NIFTY…", ["falls sharply", "stays above the short put strike", "becomes more volatile", "pins at the long put"], 1, "Both puts expire worthless and you keep the credit."],
+    ["A long straddle needs…", ["a quiet market", "a move bigger than the total premium", "IV to fall", "NIFTY to stay at the strike"], 1, "You paid two premiums; only a large move pays them back."],
+    ["Why did hedged iron condors trail the hedged strangle in our tests?", ["Wings are rich, so they cost more than they save on average", "Condors cannot be hedged", "They need more margin", "They are banned on expiry day"], 0, "Far out-of-the-money options are the most overpriced, and the condor buys them."]
+  ],
+  regimes: [
+    ["Sideways market, high VIX, implied above realised. Best fit?", ["Long straddle", "Hedged strangle or iron condor", "Long call", "Protective put"], 1, "Rich premium and no direction: sell it with a hedge or wings."],
+    ["Bullish view and options are cheap. Best fit?", ["Bull call spread or long call", "Naked short call", "Short straddle", "Iron butterfly"], 0, "When convexity is cheap, own it."],
+    ["You sell premium before an event and the move is bigger than priced (as on 4 Jun 2024). Result?", ["You profit from IV crush", "You can lose several times the premium", "Nothing happens", "Margin is refunded"], 1, "The 2024 election-day straddle priced 2.9%; NIFTY fell about 6%."],
+    ["What did our data say about timing direction for option buyers?", ["Dip-buying calls is reliable", "No buying rule held up on unseen years", "Puts are underpriced", "Breakout calls are a sure thing"], 1, "Even the best-looking rules were not significant once tested across periods."]
+  ],
+  elliott: [
+    ["Which is an Elliott Wave rule rather than a guideline?", ["Wave 3 is always 1.618 × wave 1", "Wave 2 never retraces more than 100% of wave 1", "Wave 4 always retraces 38.2%", "Wave 5 always equals wave 1"], 1, "The three rules: wave 2 < 100% of 1; wave 3 not the shortest; wave 4 no overlap with wave 1."],
+    ["In what you labelled an impulse, wave 4 falls into wave 1's price range. This means…", ["wave 5 will be huge", "the count is wrong (unless it is a diagonal)", "buy calls", "IV will fall"], 1, "Overlap breaks the impulse rule; relabel the structure."],
+    ["Which wave typically shows falling India VIX and broad participation?", ["Wave 2", "Wave 3", "Wave A", "Wave C"], 1, "Wave 3 is the strong, widely recognised trend; in India spot and VIX move opposite."],
+    ["How should Elliott Wave guide option strikes in this course?", ["Put the protective strikes of defined-risk spreads at invalidation levels", "Buy naked options at every Fibonacci level", "Ignore volatility", "Always sell straddles at wave 5"], 0, "The count's main gift is knowing where you are wrong."]
+  ],
+  risk: [
+    ["Why size short-option trades for a 10% overnight gap?", ["Exchanges require it", "Overnight moves carry much of NIFTY's variance and a close-hedged book cannot avoid them", "It raises the win rate", "It lowers STT"], 1, "About half of NIFTY's recent variance came overnight."],
+    ["Margin for a NIFTY short strangle (Sep 2026, NIFTY 23,350) was about…", ["₹25k", "₹75k", "₹1.77 lakh", "₹5 lakh"], 2, "An iron condor was ₹73–78k; a straddle ₹1.97 lakh."],
+    ["What did our tests find about stops on the hedged strangle?", ["They doubled returns", "A 2× stop lowered Sharpe from 1.00 to 0.89", "They had no effect", "They removed drawdowns"], 1, "Stops mostly sold at the worst moments."],
+    ["From 7 Dec 2026, expiring NIFTY contracts settle on…", ["the 15:30 last trade", "the 15:00–15:30 average of the constituents", "the next day's open", "the futures price"], 1, "Per NSE circulars reported in November 2026."]
+  ],
+  playbook: [
+    ["When does the core strategy open a new strangle?", ["Every Monday", "When flat, the next monthly is 28–40 days away, and IV is above 20-day realised", "After a 5% fall", "When VIX is below 12"], 1, "The window and the volatility filter both have to agree."],
+    ["Which strikes does it sell?", ["At the money", "The 16-delta call and put", "The 5-delta call only", "The 50-delta put"], 1, "About one expected move away on each side."],
+    ["How many strangle lots does the hedge need to work well?", ["1", "At least 5", "Exactly 2", "50"], 1, "With fewer lots, whole futures lots are too coarse: 1 lot gave a −43% drawdown."],
+    ["Acting a day late did what in the backtest?", ["Nothing", "Halved the Sharpe", "Doubled returns", "Removed drawdowns"], 1, "Sharpe fell from 1.00 to 0.45."]
+  ]
+};
+function buildQuizzes() {
+  $$(".quiz").forEach(box => {
+    const mod = box.dataset.module; const qs = QUIZ[mod]; if (!qs) return;
+    box.innerHTML = `<h3 style="margin-top:0">Check yourself</h3><p class="qstatus" id="qs-${mod}"></p>`;
+    qs.forEach((q, qi) => {
+      const id = mod + "-" + qi; const div = document.createElement("div"); div.className = "q";
+      div.innerHTML = `<p class="qt">${qi + 1}. ${q[0]}</p><div class="opts">${q[1].map((o, oi) => `<button class="opt" data-q="${id}" data-o="${oi}">${o}</button>`).join("")}</div><p class="why" hidden></p>`;
+      box.appendChild(div);
+      const show = oi => { $$(".opt", div).forEach((b, k) => { b.classList.toggle("right", k === q[2] && oi != null); b.classList.toggle("wrong", k === oi && oi !== q[2]); }); const w = $(".why", div); w.hidden = false; w.textContent = (oi === q[2] ? "Correct. " : "Not quite. ") + q[3]; };
+      if (store.quiz[id] != null) show(store.quiz[id]);
+      $$(".opt", div).forEach(b => b.addEventListener("click", () => { store.quiz[id] = +b.dataset.o; show(+b.dataset.o); checkDone(mod); save(); }));
+    });
+    checkDone(mod, true);
+  });
+}
+function checkDone(mod, quiet) {
+  const qs = QUIZ[mod]; const right = qs.filter((q, i) => store.quiz[mod + "-" + i] === q[2]).length; const answered = qs.filter((q, i) => store.quiz[mod + "-" + i] != null).length;
+  const s = $("#qs-" + mod); if (s) s.textContent = right === qs.length ? "All correct. This module is marked done." : `${answered} of ${qs.length} answered, ${right} correct. Get all four right to complete the module.`;
+  if (right === qs.length && !store.done[mod]) { store.done[mod] = true; save(); buildNav(); }
+}
+
+/* ---------- glossary ---------- */
+const GL = [
+  ["Call", "Basics", "The right to buy the underlying at the strike at expiry.", "A token amount that locks a flat's price."],
+  ["Put", "Basics", "The right to sell the underlying at the strike at expiry.", "Insurance on your car."],
+  ["Strike", "Basics", "The fixed price written into the option. NIFTY strikes are 50 points apart."],
+  ["Premium", "Basics", "The option's price in index points; × lot size gives rupees."],
+  ["Expiry", "Basics", "The last day of the contract. NIFTY: weekly and monthly on Tuesdays; Bank Nifty: monthly only."],
+  ["Lot size", "Basics", "Units per contract: NIFTY 65, Bank Nifty 30 (from Jan 2026). Revised about twice a year."],
+  ["Writer", "Basics", "The seller of an option, who receives the premium and takes the obligation."],
+  ["In the money (ITM)", "Basics", "An option with intrinsic value: a call below spot, a put above spot."],
+  ["At the money (ATM)", "Basics", "The strike nearest the current price."],
+  ["Out of the money (OTM)", "Basics", "An option with no intrinsic value; all premium is time value."],
+  ["Intrinsic value", "Pricing", "What the option would pay if it expired now."],
+  ["Time value", "Pricing", "Premium above intrinsic value: the price of the chance of moving.", "The part of an insurance quote that pays for uncertainty."],
+  ["European style", "Basics", "Exercisable only at expiry. All NSE index options are European."],
+  ["Cash settlement", "Basics", "Paying the difference in money instead of delivering the underlying."],
+  ["Final settlement price", "Rules", "The price used at expiry. From 7 Dec 2026, the 15:00–15:30 average of the index constituents."],
+  ["Open interest (OI)", "Market", "The number of contracts still open. Rising OI with rising prices is called long build-up; with falling prices, short build-up."],
+  ["Put-call ratio (PCR)", "Market", "Put open interest ÷ call open interest. Often read as sentiment; research finds its predictive power weak and unstable."],
+  ["Bid-ask spread", "Market", "The gap between the best buy and sell quotes: a hidden cost, larger for far, cheap options."],
+  ["Black-Scholes", "Pricing", "The classic model that prices options from spot, strike, time, volatility and rates. Black-76 is its version on futures."],
+  ["Implied volatility (IV)", "Volatility", "The volatility that makes the model match the market price: how options are really quoted."],
+  ["Realised volatility", "Volatility", "How much the index actually moved, usually the annualised standard deviation of 20 daily returns."],
+  ["India VIX", "Volatility", "NSE's 30-day implied volatility for NIFTY, built from the option order book."],
+  ["IV rank / percentile", "Volatility", "Where today's IV sits in its own past year's range. A popular filter, without rigorous evidence."],
+  ["Volatility risk premium", "Volatility", "Implied minus later realised volatility: what option sellers earn on average for carrying crash risk.", "An insurer's margin over expected claims."],
+  ["Skew", "Volatility", "Different strikes carrying different IVs. NIFTY puts below spot carry higher IV."],
+  ["Volatility smile", "Volatility", "The curve of IV across strikes; for NIFTY it is lopsided toward puts (a smirk)."],
+  ["Term structure", "Volatility", "IV across expiries. Contango: far above near (normal). Backwardation: near above far (stress)."],
+  ["Expected move", "Volatility", "Spot × IV × √(days ÷ 365): a one-standard-deviation range to expiry."],
+  ["IV crush", "Volatility", "The drop in IV after a scheduled event, which hurts option buyers even when they get the direction right."],
+  ["Delta", "Greeks", "Premium change per one-point index move; also a rough probability of finishing in the money and a hedge ratio.", "A speedometer."],
+  ["Gamma", "Greeks", "How fast delta changes. Highest at the money near expiry.", "Acceleration."],
+  ["Theta", "Greeks", "Premium lost per day with nothing else changing.", "A melting ice cube."],
+  ["Vega", "Greeks", "Premium change per one point of IV.", "Sensitivity to the storm forecast."],
+  ["Rho", "Greeks", "Premium change for a change in interest rates; small for short-dated index options."],
+  ["Vanna / Charm", "Greeks", "Second-order Greeks: how delta changes with volatility (vanna) and with time (charm)."],
+  ["Delta neutral", "Greeks", "A position whose delta is near zero, so small moves barely change its value."],
+  ["Delta hedging", "Greeks", "Offsetting delta with futures. Our core strategy re-hedges daily at the close."],
+  ["Gamma scalping", "Greeks", "Owning gamma and re-hedging delta to lock in gains from swings; the mirror image of hedged selling."],
+  ["Debit / credit spread", "Strategies", "A spread you pay for (debit) or get paid for (credit)."],
+  ["Breakeven", "Strategies", "The index level at expiry where the strategy neither makes nor loses money."],
+  ["Wings", "Strategies", "The far, cheap long options that cap a condor's or butterfly's risk."],
+  ["Naked option", "Strategies", "A short option with no protective long option: undefined risk."],
+  ["Synthetic long", "Strategies", "Long call + short put at the same strike: behaves like long futures."],
+  ["Straddle / strangle", "Strategies", "A call and a put at the same strike (straddle) or different strikes (strangle)."],
+  ["Iron condor / butterfly", "Strategies", "A short strangle or straddle with long wings that cap the risk."],
+  ["Calendar spread", "Strategies", "Selling a near expiry and buying a far one at the same strike."],
+  ["Ratio backspread", "Strategies", "Selling one option and buying more further out, to profit from a big move."],
+  ["Jade lizard", "Strategies", "A short put plus a short call spread, ideally with no upside risk."],
+  ["Collar", "Strategies", "Long exposure with a bought put and a sold call: limited both ways."],
+  ["Rolling", "Strategies", "Closing one option and opening another (further out in time or strike) in one move."],
+  ["Pin risk", "Strategies", "Uncertainty when the index sits right at a short strike at expiry."],
+  ["Max pain", "Market", "The strike where option buyers would lose the most at expiry. Popular, but without solid evidence."],
+  ["SPAN margin", "Rules", "The exchange's scenario-based margin for the worst plausible one-day move."],
+  ["Exposure margin / ELM", "Rules", "Extra margin on top of SPAN; short options pay an extra 2% on expiry day."],
+  ["STT", "Rules", "Securities Transaction Tax: 0.15% of option premium sold; 0.05% of futures sold; 0.15% of intrinsic on exercise."],
+  ["Freeze quantity", "Rules", "The largest order the exchange accepts at once: 1,800 NIFTY units, 900 Bank Nifty."],
+  ["Expectancy", "Risk", "Win rate × average win − loss rate × average loss."],
+  ["Drawdown", "Risk", "The fall from a peak in your account to the next low."],
+  ["Sharpe ratio", "Risk", "Average return ÷ volatility of returns, annualised. Above 1 is strong for a single strategy."],
+  ["Kelly criterion", "Risk", "A formula for the growth-maximising bet size. Use half or less for option selling."],
+  ["Gap risk", "Risk", "The overnight jump between one close and the next open, which no close-of-day hedge can avoid."],
+  ["Tail risk", "Risk", "The rare, very large loss that short-option strategies carry."],
+  ["Backtest", "Risk", "Testing a rule on historical data. Trust only rules that hold on years they were not built on."],
+  ["Overfitting", "Risk", "Tuning a rule to past noise so it looks great on history and fails live."],
+  ["Out of sample", "Risk", "Data a rule was not designed on. The dip-call failed its out-of-sample test."],
+  ["Impulse wave", "Elliott", "A five-wave move in the direction of the larger trend."],
+  ["Corrective wave", "Elliott", "A three-wave move against the trend: zigzag, flat or triangle."],
+  ["Wave degree", "Elliott", "The size class of a wave; each wave contains smaller waves of the same pattern."],
+  ["Fibonacci retracement", "Elliott", "Pullback levels at 23.6%, 38.2%, 50%, 61.8% and 78.6% of the prior wave."],
+  ["Fibonacci extension", "Elliott", "Projection levels such as 1.618 and 2.618 × an earlier wave."],
+  ["Alternation", "Elliott", "The guideline that waves 2 and 4 differ in form: one sharp, one sideways."],
+  ["Invalidation level", "Elliott", "The price at which a wave count is proven wrong: where defined-risk strikes belong."],
+  ["Diagonal", "Elliott", "A wedge-shaped five-wave pattern where wave 4 can overlap wave 1; found in wave 1, 5, A or C."],
+  ["Truncation", "Elliott", "A fifth wave that fails to pass the end of the third: a sign of weakness."],
+  ["Zigzag / flat / triangle", "Elliott", "The three corrective families: sharp (5-3-5), sideways (3-3-5), and contracting (3-3-3-3-3)."]
+];
+(function () {
+  const cats = ["All", ...new Set(GL.map(g => g[1]))]; let cat = "All";
+  function render() {
+    const q = ($("#gl-q").value || "").toLowerCase().trim();
+    const cb = $("#gl-cats"); cb.innerHTML = ""; cats.forEach(c => { const b = document.createElement("button"); b.className = "chip"; b.textContent = c; b.setAttribute("aria-pressed", c === cat ? "true" : "false"); b.onclick = () => { cat = c; render(); }; cb.appendChild(b); });
+    const list = $("#gl-list"); list.innerHTML = "";
+    const items = GL.filter(g => (cat === "All" || g[1] === cat) && (!q || (g[0] + " " + g[2] + " " + (g[3] || "")).toLowerCase().includes(q)));
+    if (!items.length) { list.innerHTML = '<p class="small">No term matches. Try a shorter word.</p>'; return; }
+    items.forEach(g => { const d = document.createElement("div"); d.className = "term"; d.innerHTML = `<b></b><span class="cat"></span><p></p>${g[3] ? '<p class="an"></p>' : ""}`; $("b", d).textContent = g[0]; $(".cat", d).textContent = g[1]; $("p", d).textContent = g[2]; if (g[3]) $(".an", d).textContent = "Analogy: " + g[3]; list.appendChild(d); });
+  }
+  $("#gl-q").addEventListener("input", render);
+  onRoute("glossary", render);
+})();
+
+/* ---------- tutor (sample capability) ---------- */
+const RULES = `You are the tutor inside "Options Wave by Wave", an options course for traders learning NIFTY and Bank Nifty options, many of whom use Elliott Wave.
+How to answer:
+- Plain English, short paragraphs or bullets, under about 220 words unless asked for more.
+- Give one everyday analogy, and where useful one worked NIFTY example in rupees (NIFTY lot 65, Bank Nifty lot 30; strikes every 50 / 100 points; NIFTY weekly and monthly expiries on Tuesdays, Bank Nifty monthly only).
+- Be accurate about Elliott Wave rules (wave 2 never beyond the start of wave 1; wave 3 never the shortest; wave 4 never overlaps wave 1 except in diagonals). Say plainly that Elliott Wave has no peer-reviewed evidence of forecasting skill and is best used for scenarios and invalidation levels.
+- Never tell the learner what to buy or sell with real money or how much. Explain how things work and their risks.
+- If a question is unrelated to markets, answer in one line and steer back.
+Facts from this course's own research (NSE end-of-day options 2008–2026) you may use:
+- ATM implied vol beat later realised vol by 2.15 points on average, 73% of the time; NIFTY's real move to expiry was 98% of the priced move, so unhedged selling lost.
+- Volatility premium by IV level: +0.8 pts in the cheapest fifth, +5.4 in the dearest; realised/priced move 1.13 vs 0.92.
+- Unhedged 16-delta strangle: 78% wins but net loss, worst trade −312% of margin (2020). Delta-hedged: Sharpe 0.66; with an "IV above 20-day realised" entry filter: 1.00 (1.12 and 0.95 in 2008–16 and 2017–26), about 8% a year at 10% volatility, max drawdown −12%; flat in 2023–26 as credits thinned to 0.7% of spot. Acting a day late halved the Sharpe; it needs at least 5 lots to hedge with whole futures lots.
+- Iron condor hedged: Sharpe 0.44 (wings are overpriced). Buying ATM calls 10 days: −0.7% a trade over 420 trades. Dip-call (buy calls ≥5% below 20-day high) failed out of sample (−3.8% a trade in 2008–13). Weekly 5-delta puts: 97% wins, tail risk.
+- India costs late 2026: STT 0.15% of option premium sold, 0.05% of futures sold; NSE 0.03553% of premium. Margin (Sep 2026 SPAN, NIFTY 23,350): strangle ₹1.77 lakh, iron condor ₹73–78k per lot. SEBI FY26: 87.7% of individual F&O traders lost money.
+- From 7 Dec 2026 expiring index contracts settle on the 15:00–15:30 constituent average.`;
+const TOPIC_PROMPT = { basics: "Explain calls and puts with a fresh analogy and one NIFTY rupee example.", pricing: "Why does time decay speed up near expiry? Use a NIFTY example.", greeks: "Explain gamma risk for an option seller like I'm new to this.", volatility: "What is the volatility risk premium and why do sellers earn it?", edge: "Why can a 90% win-rate strategy still lose money?", strategies: "Iron condor vs short strangle: when would each make sense?", regimes: "How should I think about strategies before a big event like an election result?", elliott: "How could I use wave 4 of an impulse to structure an options trade?", risk: "How do I size an option-selling position for gap risk?", playbook: "Walk me through one month of the delta-hedged strangle." };
+(function () {
+  let sample = null, turns = [], ctl = null, busy = false;
+  const chips = ["Explain delta like I'm 12", "Why do most option buyers lose?", "What is IV crush?", "How does wave 3 change my option choice?", "Short strangle vs iron condor?"];
+  const cb = $("#tu-chips"); chips.forEach(c => { const b = document.createElement("button"); b.className = "chip"; b.textContent = c; b.onclick = () => { $("#tu-in").value = c; send(); }; cb.appendChild(b); });
+  document.addEventListener("click", e => { const a = e.target.closest("[data-ask]"); if (!a) return; const p = TOPIC_PROMPT[a.dataset.ask]; if (p) setTimeout(() => { $("#tu-in").value = p; $("#tu-in").focus(); }, 60); });
+  function render(text, node) {
+    node.innerHTML = ""; const lines = String(text).split("\n"); let ul = null;
+    lines.forEach(line => {
+      const m = line.match(/^\s*(?:[-*•]|\d+[.)])\s+(.*)$/);
+      if (m) { if (!ul) { ul = document.createElement("ul"); node.appendChild(ul); } const li = document.createElement("li"); inline(m[1], li); ul.appendChild(li); }
+      else { ul = null; if (line.trim()) { const p = document.createElement("p"); inline(line.replace(/^#+\s*/, ""), p); node.appendChild(p); } }
+    });
+  }
+  function inline(s, parent) { s.split(/(\*\*[^*]+\*\*)/).forEach(part => { if (/^\*\*[^*]+\*\*$/.test(part)) { const b = document.createElement("b"); b.textContent = part.slice(2, -2); parent.appendChild(b); } else parent.appendChild(document.createTextNode(part)); }); }
+  function add(role, text) { const d = document.createElement("div"); d.className = "msg " + (role === "user" ? "me" : "bot"); if (role === "user") d.textContent = text; else render(text, d); $("#tu-chat").appendChild(d); return d; }
+  function copyFor(code) {
+    if (code === "not_granted" || code === "sampling_disabled" || code === "not_declared" || code === "capability_disabled" || code === "capability_removed") return "The tutor is turned off for this page. Everything else in the course still works.";
+    if (code === "rate_limited") return "Too many questions in a short time. Wait a little, then ask again.";
+    if (code === "session_expired") return "Your Claude session expired. Sign in again, then ask.";
+    if (code === "refused") return "The tutor could not answer that one. Try rephrasing the question.";
+    return "The answer was interrupted. Ask again when you are ready.";
+  }
+  async function send() {
+    const q = $("#tu-in").value.trim(); if (!q || busy || !sample) return;
+    busy = true; $("#tu-send").disabled = true; $("#tu-stop").hidden = false; $("#tu-in").value = "";
+    add("user", q); turns.push({ role: "user", content: q }); if (turns.length > 12) turns = turns.slice(-12);
+    if (turns[0].role !== "user") turns.shift();
+    const bubble = add("bot", "Thinking…"); ctl = new AbortController();
+    try {
+      const { text } = await sample([{ role: "user", content: RULES }, ...turns], { cache: false, signal: ctl.signal, onText: ({ text }) => render(text, bubble) });
+      render(text, bubble); turns.push({ role: "assistant", content: text });
+    } catch (e) {
+      const code = e && e.code; if (e && e.text) render(e.text, bubble); else bubble.textContent = "";
+      if (code !== "cancelled") { const n = document.createElement("p"); n.className = "small"; n.textContent = copyFor(code); bubble.appendChild(n); }
+      if (["not_granted", "sampling_disabled", "not_declared", "capability_disabled", "capability_removed"].includes(code)) { sample = null; $("#tu-send").disabled = true; }
+      turns.pop();
+    } finally { busy = false; if (sample) $("#tu-send").disabled = false; $("#tu-stop").hidden = true; $("#tu-chat").lastElementChild.scrollIntoView({ block: "nearest" }); }
+  }
+  $("#tu-send").onclick = send; $("#tu-stop").onclick = () => ctl && ctl.abort();
+  $("#tu-in").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } });
+  $("#tu-send").disabled = true; $("#tu-note").textContent = "Connecting the tutor…";
+  (async () => {
+    try { sample = window.claude && window.claude.use ? await window.claude.use("sample") : null; } catch (e) { sample = null; }
+    if (sample) { $("#tu-send").disabled = false; $("#tu-note").textContent = "Each question uses your own Claude usage. The first question asks your permission."; }
+    else { $("#tu-note").textContent = "The tutor works when this page is opened in Claude. Everything else in the course works here."; $$("#tu-chips .chip").forEach(b => b.disabled = true); }
+  })();
+})();
+
+/* ---------- boot ---------- */
+buildNav(); buildNext(); buildQuizzes(); route();
+</script>
+</body>
+</html>
